@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using System.Collections.Generic;
 using PortalWeld.GeometryTool;
 using UnityEngine;
 using UnityEditor;
@@ -46,6 +47,25 @@ namespace PortalWeld
         }
 
         /// <summary>
+        /// Whether or not the component of the specified type is part of any 
+        /// selected game object.
+        /// </summary>
+        /// <typeparam name="T">The type to look for.</typeparam>
+        /// <returns>True if any selected game object has the component.</returns>
+        public static bool SelectionHas<T>() where T : Component
+        {
+            foreach (var obj in Selection.objects)
+            {
+                if (obj is GameObject gameObject && gameObject.HasComponent<T>())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Converts a number within a specified range to its equivalent 
         /// position within another range.
         /// </summary>
@@ -78,6 +98,25 @@ namespace PortalWeld
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets a component of the specified type from the selected game 
+        /// objects.
+        /// </summary>
+        /// <typeparam name="T">The type of component to get.</typeparam>
+        /// <returns>The component if one is selected.</returns>
+        public static T GetFromSelection<T>() where T : class
+        {
+            foreach (var selectedObject in Selection.objects)
+            {
+                if (selectedObject is GameObject gameObject && gameObject.HasComponent<T>())
+                {
+                    return gameObject.GetComponent<T>();
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -177,6 +216,26 @@ namespace PortalWeld
             }
 
             return (item1, item2, item3, item4);
+        }
+
+        /// <summary>
+        /// Gets as many of the specified component that is currently selected.
+        /// </summary>
+        /// <typeparam name="T">The type of component to get.</typeparam>
+        /// <returns>A list of all selected components.</returns>
+        public static List<T> GetManyFromSelection<T>()
+        {
+            var list = new List<T>();
+
+            foreach (var obj in Selection.objects)
+            {
+                if (obj is GameObject gameObject && gameObject.HasComponent<T>())
+                {
+                    list.Add(gameObject.GetComponent<T>());
+                }
+            }
+
+            return list;
         }
     }
 }

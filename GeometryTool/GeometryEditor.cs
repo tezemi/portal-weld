@@ -147,8 +147,8 @@ namespace PortalWeld.GeometryTool
                 meshGameObject.GetComponent<MeshFilter>().mesh = mesh;
                 meshGameObject.GetComponent<MeshRenderer>().sharedMaterial = new Material(Settings.BaseMaterial)
                 {
-                    name = $"{Settings.DefaultTexture.name} Material",
-                    mainTexture = Settings.DefaultTexture
+                    name = $"{Settings.SelectedTexture.name} Material",
+                    mainTexture = Settings.SelectedTexture
                 };
 
                 meshGameObject.AddComponent<EditableTexture>();
