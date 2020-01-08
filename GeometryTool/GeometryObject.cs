@@ -16,6 +16,7 @@ namespace PortalWeld.GeometryTool
         protected virtual float MinimumGizmoSize => MaximumGizoSize / 3f;
         protected virtual Color SelectedGizmoColor { get; } = new Color(0.25f, 0.4f, 1f);
         protected virtual Color UnselectedGizmoColor { get; } = Color.white;
+        protected virtual Color ExistingGizmoColor { get; } = new Color(0.75f, 0.55f, 0.15f, 1f);
         protected virtual Vector3 PositionTextOffset { get; } = new Vector3(1f, 1f, 1f);
         
         protected virtual float Size
@@ -60,7 +61,7 @@ namespace PortalWeld.GeometryTool
 
         protected virtual void OnDrawGizmos()
         {
-            Gizmos.color = Utilities.IsSelected(this) ? SelectedGizmoColor : UnselectedGizmoColor;
+            Gizmos.color = Utilities.IsSelected(this) ? SelectedGizmoColor : GeometryEditor.EditType == GeometryEditType.Existing ? ExistingGizmoColor : UnselectedGizmoColor;
             if (Utilities.IsSelected(this))
             {
                 Handles.Label(transform.position + PositionTextOffset, transform.position.ToString());

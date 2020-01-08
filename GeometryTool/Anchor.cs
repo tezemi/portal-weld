@@ -7,7 +7,7 @@ namespace PortalWeld.GeometryTool
     {
         protected override float Size => Settings.ShowDynamicGizmos ? Vector3.Distance(transform.position, Camera.current.transform.position) * DynamicGizmoScale : MaximumGizoSize;
 
-        protected Vector3 Center
+        public Vector3 Center
         {
             get
             {

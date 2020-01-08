@@ -13,9 +13,13 @@ namespace PortalWeld.GeometryTool
         [HideInInspector]
         public bool IsBeingDestroyed;
         [HideInInspector]
+        public GeometryEditType EditType;
+        [HideInInspector]
         public Anchor Anchor;
         [HideInInspector]
         public MeshPreview MeshPreview;
+        [HideInInspector]
+        public BuiltGeometry EditingGeometry;
         [HideInInspector]
         public List<Face> Faces = new List<Face>();
         [HideInInspector]
@@ -43,8 +47,50 @@ namespace PortalWeld.GeometryTool
 
         protected virtual void Awake()
         {
-            Current = this;
+            if (Current != null && Current != this)
+            {
+                DestroyImmediate(Current.Anchor.gameObject);
+            }
 
+            Current = this;
+            gameObject.hideFlags = HideFlags.HideInHierarchy;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            IsBeingDestroyed = true;
+
+            var cleanup = new List<GameObject>();
+            foreach (var edge in Edges)
+            {
+                cleanup.Add(edge.gameObject);
+            }
+
+            foreach (var vert in Vertices)
+            {
+                cleanup.Add(vert.gameObject);
+            }
+
+            foreach (var face in Faces)
+            {
+                cleanup.Add(face.gameObject);
+            }
+
+            foreach (var clean in cleanup)
+            {
+                DestroyImmediate(clean);
+            }
+
+            DestroyImmediate(MeshPreview.gameObject);
+        }
+
+        protected virtual void OnApplicationQuit()
+        {
+            OnDestroy();
+        }
+
+        protected void SetupCubeEditing()
+        {
             transform.position = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
 
             // GeometryEditor always starts as a cube
@@ -85,48 +131,59 @@ namespace PortalWeld.GeometryTool
 
             Face4.Create(this, new Triangle(Vertices[4], Vertices[0], Vertices[5]), new Triangle(Vertices[0], Vertices[1], Vertices[5]));   // right
             Face4.Create(this, new Triangle(Vertices[7], Vertices[3], Vertices[6]), new Triangle(Vertices[3], Vertices[2], Vertices[6]));   // left
-            
+
             // Create anchor point
             Anchor = Anchor.Create(this);
             Selection.activeGameObject = Anchor.gameObject;
 
             // Create mesh preview tool
             MeshPreview = MeshPreview.Create(this);
-
-            gameObject.hideFlags = HideFlags.HideInHierarchy;
         }
 
-        protected virtual void OnDestroy()
+        protected void SetupMeshEditing(BuiltGeometry geometry)
         {
-            IsBeingDestroyed = true;
+            transform.position = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
 
-            var cleanup = new List<GameObject>();
-            foreach (var edge in Edges)
+            foreach (var vertex in geometry.Vertices)
             {
-                cleanup.Add(edge.gameObject);
+                Vertex.Create(this, vertex);
             }
 
-            foreach (var vert in Vertices)
+            foreach (var edge in geometry.Edges)
             {
-                cleanup.Add(vert.gameObject);
+                var vertex1 = GetVertexAtPosition(edge.Vertex1);
+                var vertex2 = GetVertexAtPosition(edge.Vertex2);
+
+                Edge.Create(this, vertex1, vertex2);
             }
 
-            foreach (var face in Faces)
+            foreach (var face in geometry.Faces)
             {
-                cleanup.Add(face.gameObject);
+                if (face.Face4)
+                {
+                    var tri1 = new Triangle(GetVertexAtPosition(face.Triangles[0].Vertices[0]), GetVertexAtPosition(face.Triangles[0].Vertices[1]), GetVertexAtPosition(face.Triangles[0].Vertices[2]));
+                    var tri2 = new Triangle(GetVertexAtPosition(face.Triangles[1].Vertices[0]), GetVertexAtPosition(face.Triangles[1].Vertices[1]), GetVertexAtPosition(face.Triangles[1].Vertices[2]));
+                    Face4.Create(this, tri1, tri2);
+                }
+                else
+                {
+                    var tri = new Triangle(GetVertexAtPosition(face.Triangles[0].Vertices[0]), GetVertexAtPosition(face.Triangles[0].Vertices[1]), GetVertexAtPosition(face.Triangles[0].Vertices[2]));
+                    Face3.Create(this, tri);
+                }
             }
 
-            foreach (var clean in cleanup)
-            {
-                DestroyImmediate(clean);
-            }
+            Anchor = Anchor.Create(this);
+            Anchor.transform.position = geometry.GlobalPosition;
+            Selection.activeGameObject = Anchor.gameObject;
 
-            DestroyImmediate(MeshPreview.gameObject);
+            MeshPreview = MeshPreview.Create(this);
         }
 
-        protected virtual void OnApplicationQuit()
+        public void RebuildGeometry()
         {
-            OnDestroy();
+            var oldGeometry = EditingGeometry;
+            BuildGeometry();
+            DestroyImmediate(oldGeometry.gameObject);
         }
 
         public void BuildGeometry()
@@ -134,27 +191,38 @@ namespace PortalWeld.GeometryTool
             var parentGameObject = new GameObject("Geometry");
             parentGameObject.transform.position = Anchor.transform.position;
 
+            var built = BuiltGeometry.Create(parentGameObject, this);
             var meshes = GenerateQuads();
 
-            foreach (var mesh in meshes)
+            for (var i = 0; i < meshes.Count; i++)
             {
+                var mesh = meshes[i];
                 var meshGameObject = new GameObject("Face", typeof(MeshFilter), typeof(MeshRenderer));
 
                 meshGameObject.transform.position = Anchor.transform.position;
                 meshGameObject.transform.SetParent(parentGameObject.transform, true);
-                //meshGameObject.hideFlags = HideFlags.HideInHierarchy;
 
                 meshGameObject.GetComponent<MeshFilter>().mesh = mesh;
-                meshGameObject.GetComponent<MeshRenderer>().sharedMaterial = new Material(Settings.BaseMaterial)
+
+                if (EditType == GeometryEditType.New)
                 {
-                    name = $"{Settings.SelectedTexture.name} Material",
-                    mainTexture = Settings.SelectedTexture
-                };
+                    meshGameObject.GetComponent<MeshRenderer>().sharedMaterial = new Material(Settings.BaseMaterial)
+                    {
+                        name = $"{Settings.SelectedTexture.name} Material",
+                        mainTexture = Settings.SelectedTexture
+                    };
+                }
+                else
+                {
+                    meshGameObject.GetComponent<MeshRenderer>().sharedMaterial = new Material(EditingGeometry.transform.GetChild(i).GetComponent<MeshRenderer>().sharedMaterial);
+                }
 
                 meshGameObject.AddComponent<EditableTexture>();
             }
-        }
 
+            EditingGeometry = built;
+        }
+        
         public Mesh GenerateMesh()
         {
             var mesh = new Mesh();
@@ -253,11 +321,38 @@ namespace PortalWeld.GeometryTool
             return meshes;
         }
 
-        public static GeometryEditor Create(GeometryEditType editType)
+        public Vertex GetVertexAtPosition(Vector3 position)
         {
-            var gameObject = new GameObject("Geometry Editor", typeof(GeometryEditor));
+            foreach (var vertex in Vertices)
+            {
+                if (vertex.transform.position == position)
+                {
+                    return vertex;
+                }
+            }
 
-            return gameObject.GetComponent<GeometryEditor>();
+            return null;
+        }
+
+        public static GeometryEditor Create()
+        {
+            var editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>();
+
+            editor.EditType = GeometryEditType.New;
+            editor.SetupCubeEditing();
+
+            return editor;
+        }
+
+        public static GeometryEditor Create(BuiltGeometry geometry)
+        {
+            var editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>();
+
+            editor.EditType = GeometryEditType.Existing;
+            editor.EditingGeometry = geometry;
+            editor.SetupMeshEditing(geometry);
+
+            return editor;
         }
     }
 }

@@ -44,6 +44,16 @@ namespace PortalWeld
             Menu.SetChecked(SnapToGridPath, Settings.SnapToGrid);
         }
 
+        [MenuItem("Portal Weld/Geometry/Edit Geometry #e")]
+        private static void EditGeometry()
+        {
+            if (Utilities.SelectionHas<BuiltGeometry>())
+            {
+                var builtGeometry = Utilities.GetFromSelection<BuiltGeometry>();
+                GeometryEditor.Create(builtGeometry);
+            }
+        }
+
         [MenuItem("Portal Weld/Geometry/Bifurcate Edge #b")]
         private static void BifurcateEdge()
         {
@@ -144,7 +154,7 @@ namespace PortalWeld
         [MenuItem("GameObject/Portal Weld/Geometry Editor", false, 11)]
         private static void CreateGeometry()
         {
-            GeometryEditor.Create(GeometryEditType.New);
+            GeometryEditor.Create();
         }
     }
 }
