@@ -23,7 +23,10 @@ namespace PortalWeld.GeometryTool
 
         protected virtual void OnDestroy()
         {
-            DestroyImmediate(GeometryEditor.gameObject);
+            if (GeometryEditor != null)
+            {
+                DestroyImmediate(GeometryEditor.gameObject);
+            }
         }
 
         protected override void OnDrawGizmos()

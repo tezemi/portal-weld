@@ -29,8 +29,17 @@ namespace PortalWeld.GeometryTool
                     SnapToGrid();
                 }
 
-                GeometryEditor.MeshPreview.UpdatePreview();
-                OnMoved(transform.position - PositionLastFrame);
+                // Do this check again after snapping to the grid, to make sure movement actually occurred
+                if (transform.position != PositionLastFrame) 
+                {
+                    GeometryEditor.MeshPreview.UpdatePreview();
+                    OnMoved(transform.position - PositionLastFrame);
+
+                    if (GeometryEditor.EditType == GeometryEditType.Existing)
+                    {
+                        GeometryEditor.RebuildGeometry();
+                    }
+                }
             }
 
             PositionLastFrame = transform.position;

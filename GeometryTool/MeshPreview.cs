@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 
 namespace PortalWeld.GeometryTool
 {
@@ -40,3 +41,4 @@ namespace PortalWeld.GeometryTool
         }
     }
 }
+#endif

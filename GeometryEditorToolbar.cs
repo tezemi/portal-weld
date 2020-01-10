@@ -74,16 +74,9 @@ namespace PortalWeld
             #endregion
 
             #region Build Geometry
-            if (GUILayout.Button(GeometryEditor.Current == null || GeometryEditor.Current.EditType == GeometryEditType.New ? "Build\nGeometry" : "Rebuild\nGeometry", GUILayout.Width(ButtonSize), GUILayout.Height(ButtonSize)) && GeometryEditor.Current != null)
+            if (GUILayout.Button("Build\nGeometry", GUILayout.Width(ButtonSize), GUILayout.Height(ButtonSize)) && GeometryEditor.Current != null && GeometryEditor.Current.EditType == GeometryEditType.New)
             {
-                if (GeometryEditor.Current.EditType == GeometryEditType.New)
-                {
-                    GeometryEditor.Current.BuildGeometry();
-                }
-                else
-                {
-                    GeometryEditor.Current.RebuildGeometry();
-                }
+                GeometryEditor.Current.BuildGeometry();
             }
             #endregion
 

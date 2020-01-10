@@ -171,7 +171,6 @@ namespace PortalWeld.GeometryTool
             }
 
             Anchor = Anchor.Create(this);
-            //Anchor.GeometryUpdated(Vector3.zero);
             Selection.activeGameObject = Anchor.gameObject;
 
             MeshPreview = MeshPreview.Create(this);
@@ -355,11 +354,25 @@ namespace PortalWeld.GeometryTool
 
         public static GeometryEditor Create(BuiltGeometry geometry)
         {
-            var editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>();
+            var isRebuild = false;
+            GeometryEditor editor;
+            if (Current == null)
+            {
+                editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>();
+            }
+            else
+            {
+                editor = Current;
+                isRebuild = true;
+            }
 
             editor.EditType = GeometryEditType.Existing;
             editor.EditingGeometry = geometry;
-            editor.SetupMeshEditing(geometry.GeometryData);
+
+            if (!isRebuild)
+            {
+                editor.SetupMeshEditing(geometry.GeometryData);
+            }
 
             return editor;
         }
