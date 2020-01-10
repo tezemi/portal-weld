@@ -5,8 +5,6 @@ namespace PortalWeld.GeometryTool
 {
     public class Anchor : GeometryObject
     {
-        protected override float Size => Settings.ShowDynamicGizmos ? Vector3.Distance(transform.position, Camera.current.transform.position) * DynamicGizmoScale : MaximumGizoSize;
-
         public Vector3 Center
         {
             get
@@ -68,8 +66,10 @@ namespace PortalWeld.GeometryTool
 
             anchor.transform.position = anchor.Center;
 
-            anchor.PositionLastFrame = anchor.transform.position;
+            anchor.SnapToGrid();
 
+            anchor.PositionLastFrame = anchor.transform.position;
+            
             return anchor;
         }
     }

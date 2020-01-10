@@ -154,7 +154,14 @@ namespace PortalWeld
         [MenuItem("GameObject/Portal Weld/Geometry Editor", false, 11)]
         private static void CreateGeometry()
         {
-            GeometryEditor.Create();
+            if (Settings.LastBuiltGeometryData.HasValue)
+            {
+                GeometryEditor.Create(Settings.LastBuiltGeometryData.Value);
+            }
+            else
+            {
+                GeometryEditor.Create();
+            }
         }
     }
 }

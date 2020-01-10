@@ -91,19 +91,19 @@ namespace PortalWeld.GeometryTool
 
         protected void SetupCubeEditing()
         {
-            transform.position = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
+            const float cubeSize = 3f;
 
             // GeometryEditor always starts as a cube
             // This creates eight vertices in a cube shape
-            Vertex.Create(this, transform.position + new Vector3(1f, 1f, 1f));
-            Vertex.Create(this, transform.position + new Vector3(-1f, 1f, 1f));
-            Vertex.Create(this, transform.position + new Vector3(1f, 1f, -1f));
-            Vertex.Create(this, transform.position + new Vector3(-1f, 1f, -1f));
+            Vertex.Create(this, transform.position + new Vector3(cubeSize, cubeSize, cubeSize));
+            Vertex.Create(this, transform.position + new Vector3(-cubeSize, cubeSize, cubeSize));
+            Vertex.Create(this, transform.position + new Vector3(cubeSize, cubeSize, -cubeSize));
+            Vertex.Create(this, transform.position + new Vector3(-cubeSize, cubeSize, -cubeSize));
 
-            Vertex.Create(this, transform.position + new Vector3(1f, -1f, 1f));
-            Vertex.Create(this, transform.position + new Vector3(-1f, -1f, 1f));
-            Vertex.Create(this, transform.position + new Vector3(1f, -1f, -1f));
-            Vertex.Create(this, transform.position + new Vector3(-1f, -1f, -1f));
+            Vertex.Create(this, transform.position + new Vector3(cubeSize, -cubeSize, cubeSize));
+            Vertex.Create(this, transform.position + new Vector3(-cubeSize, -cubeSize, cubeSize));
+            Vertex.Create(this, transform.position + new Vector3(cubeSize, -cubeSize, -cubeSize));
+            Vertex.Create(this, transform.position + new Vector3(-cubeSize, -cubeSize, -cubeSize));
 
             // Create the edges of the cube
             Edge.Create(this, Vertices[0], Vertices[1]).ShowLength = true;
@@ -140,16 +140,14 @@ namespace PortalWeld.GeometryTool
             MeshPreview = MeshPreview.Create(this);
         }
 
-        protected void SetupMeshEditing(BuiltGeometry geometry)
+        protected void SetupMeshEditing(GeometryData data)
         {
-            transform.position = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
-
-            foreach (var vertex in geometry.Vertices)
+            foreach (var vertex in data.Vertices)
             {
                 Vertex.Create(this, vertex);
             }
 
-            foreach (var edge in geometry.Edges)
+            foreach (var edge in data.Edges)
             {
                 var vertex1 = GetVertexAtPosition(edge.Vertex1);
                 var vertex2 = GetVertexAtPosition(edge.Vertex2);
@@ -157,7 +155,7 @@ namespace PortalWeld.GeometryTool
                 Edge.Create(this, vertex1, vertex2);
             }
 
-            foreach (var face in geometry.Faces)
+            foreach (var face in data.Faces)
             {
                 if (face.Face4)
                 {
@@ -173,7 +171,7 @@ namespace PortalWeld.GeometryTool
             }
 
             Anchor = Anchor.Create(this);
-            Anchor.transform.position = geometry.GlobalPosition;
+            //Anchor.GeometryUpdated(Vector3.zero);
             Selection.activeGameObject = Anchor.gameObject;
 
             MeshPreview = MeshPreview.Create(this);
@@ -220,7 +218,9 @@ namespace PortalWeld.GeometryTool
                 meshGameObject.AddComponent<EditableTexture>();
             }
 
-            EditingGeometry = built;
+            Settings.LastBuiltGeometryData = new GeometryData(this);
+
+            Create(built);
         }
         
         public Mesh GenerateMesh()
@@ -344,13 +344,22 @@ namespace PortalWeld.GeometryTool
             return editor;
         }
 
+        public static GeometryEditor Create(GeometryData data)
+        {
+            var editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>();
+
+            editor.SetupMeshEditing(data);
+
+            return editor;
+        }
+
         public static GeometryEditor Create(BuiltGeometry geometry)
         {
             var editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>();
 
             editor.EditType = GeometryEditType.Existing;
             editor.EditingGeometry = geometry;
-            editor.SetupMeshEditing(geometry);
+            editor.SetupMeshEditing(geometry.GeometryData);
 
             return editor;
         }

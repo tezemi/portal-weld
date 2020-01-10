@@ -33,6 +33,10 @@ namespace PortalWeld
         /// </summary>
         public static GeometryEditMode GeometryEditMode { get; set; }
         /// <summary>
+        /// The data for the most recently built geometry.
+        /// </summary>
+        public static GeometryData? LastBuiltGeometryData { get; set; }
+        /// <summary>
         /// The material to use as a base for newly created geometry.
         /// </summary>
         public static Material BaseMaterial { get; set; }
