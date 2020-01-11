@@ -237,6 +237,31 @@ namespace PortalWeld
 
             return list;
         }
+
+        /// <summary>
+        /// Saves an asset to the editor prefs by setting its asset path as 
+        /// the value. Use GetEditorPrefAsset() to get the asset.
+        /// </summary>
+        /// <typeparam name="T">The type of asset to save.</typeparam>
+        /// <param name="key">The key to use for the asset.</param>
+        /// <param name="value">The asset itself.</param>
+        public static void SetEditorPrefAsset<T>(string key, T value) where T : Object
+        {
+            EditorPrefs.SetString(key, AssetDatabase.GetAssetPath(value));
+        }
+
+        /// <summary>
+        /// Gets an asset that was saved in the editor prefs.
+        /// </summary>
+        /// <typeparam name="T">The type of asset to get.</typeparam>
+        /// <param name="key">The key used to store the asset.</param>
+        /// <param name="fallback">The path to the asset if the key isn't 
+        /// found.</param>
+        /// <returns>The specified asset, if it was found.</returns>
+        public static T GetEditorPrefAsset<T>(string key, string fallback) where T : Object
+        {
+            return AssetDatabase.LoadAssetAtPath<T>(EditorPrefs.GetString(key, fallback));
+        }
     }
 }
 #endif

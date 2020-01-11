@@ -15,30 +15,6 @@ namespace PortalWeld
             window.minSize = new Vector2(WindowMinimumSize, WindowMinimumSize);
         }
 
-        protected virtual void OnEnable()
-        {
-            // Get settings and apply to toolbar
-            Settings.SnapToGrid = EditorPrefs.GetBool("Settings.SnapToGrid", true);
-            Settings.ShowMeshPreview = EditorPrefs.GetBool("Settings.ShowMeshPreview", false);
-            Settings.ShowDynamicGizmos = EditorPrefs.GetBool("Settings.ShowDynamicGizmos", false);
-            Settings.GridSize = EditorPrefs.GetFloat("Settings.GridSize", 1f);
-            Settings.GeometryEditMode = (GeometryEditMode)EditorPrefs.GetInt("Settings.GeometryEditMode", 0);
-            Settings.BaseMaterial = AssetDatabase.LoadAssetAtPath<Material>(EditorPrefs.GetString("Settings.BaseMaterial", string.Empty));
-            Settings.SelectedTexture = AssetDatabase.LoadAssetAtPath<Texture>(EditorPrefs.GetString("Settings.SelectedTexture", string.Empty));
-        }
-
-        protected virtual void OnDisable()
-        {
-            // Save any settings changed by toolbar
-            EditorPrefs.SetBool("Settings.SnapToGrid", Settings.SnapToGrid);
-            EditorPrefs.SetBool("Settings.ShowMeshPreview", Settings.ShowMeshPreview);
-            EditorPrefs.SetBool("Settings.ShowDynamicGizmos", Settings.ShowDynamicGizmos);
-            EditorPrefs.SetFloat("Settings.GridSize", Settings.GridSize);
-            EditorPrefs.SetInt("Settings.GeometryEditMode", (int)Settings.GeometryEditMode);
-            EditorPrefs.SetString("Settings.BaseMaterial", AssetDatabase.GetAssetPath(Settings.BaseMaterial));
-            EditorPrefs.SetString("Settings.SelectedTexture", AssetDatabase.GetAssetPath(Settings.SelectedTexture));
-        }
-
         protected override void OnGUI()
         {
             base.OnGUI();
