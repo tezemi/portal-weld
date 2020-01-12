@@ -31,7 +31,9 @@ namespace PortalWeld
             PortalWeldToolbarButton("Face\nEdit Mode", 2);
             #endregion
 
-            #region Grid Size
+            #region Options
+            EditorGUILayout.BeginVertical();
+
             EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(20f));
 
             if (GUILayout.Button("-"))
@@ -47,6 +49,12 @@ namespace PortalWeld
             }
 
             EditorGUILayout.EndHorizontal();
+
+            Settings.IsStatic = EditorGUILayout.Toggle("Is Static", Settings.IsStatic);
+            Settings.IsSolid = EditorGUILayout.Toggle("Is Solid", Settings.IsSolid);
+            Settings.GeometryLayerMask = EditorGUILayout.LayerField("Geometry Layer Mask", Settings.GeometryLayerMask);
+            
+            EditorGUILayout.EndVertical();
             #endregion
 
             #region Build Geometry

@@ -26,6 +26,14 @@ namespace PortalWeld
         /// </summary>
         public static bool ShowDynamicGizmos { get; set; }
         /// <summary>
+        /// Whether or not created geometry should have a collider attached.
+        /// </summary>
+        public static bool IsSolid { get; set; }
+        /// <summary>
+        /// True if the newly created geometry should be static.
+        /// </summary>
+        public static bool IsStatic { get; set; }
+        /// <summary>
         /// The current size of the grid to snap to.
         /// </summary>
         public static float GridSize { get; set; }
@@ -33,6 +41,10 @@ namespace PortalWeld
         /// The current geometry edit mode.
         /// </summary>
         public static GeometryEditMode GeometryEditMode { get; set; }
+        /// <summary>
+        /// The layers to apply to created geometry.
+        /// </summary>
+        public static LayerMask GeometryLayerMask { get; set; }
         /// <summary>
         /// The data for the most recently built geometry.
         /// </summary>
@@ -52,8 +64,13 @@ namespace PortalWeld
             SnapToGrid = EditorPrefs.GetBool("Settings.SnapToGrid", true);
             ShowMeshPreview = EditorPrefs.GetBool("Settings.ShowMeshPreview", false);
             ShowDynamicGizmos = EditorPrefs.GetBool("Settings.ShowDynamicGizmos", false);
+            IsSolid = EditorPrefs.GetBool("Settings.IsSolid", true);
+            IsStatic = EditorPrefs.GetBool("Settings.IsStatic", true);
+
             GridSize = EditorPrefs.GetFloat("Settings.GridSize", 1f);
             GeometryEditMode = (GeometryEditMode)EditorPrefs.GetInt("Settings.GeometryEditMode", 0);
+            GeometryLayerMask = EditorPrefs.GetInt("Settings.GeometryLayerMask", 0);
+
             BaseMaterial = Utilities.GetEditorPrefAsset<Material>("Settings.BaseMaterial", string.Empty);
             SelectedTexture = Utilities.GetEditorPrefAsset<Texture>("Settings.SelectedTexture", string.Empty);
             
@@ -65,8 +82,13 @@ namespace PortalWeld
                 EditorPrefs.SetBool("Settings.SnapToGrid", SnapToGrid);
                 EditorPrefs.SetBool("Settings.ShowMeshPreview", ShowMeshPreview);
                 EditorPrefs.SetBool("Settings.ShowDynamicGizmos", ShowDynamicGizmos);
+                EditorPrefs.SetBool("Settings.IsSolid", IsSolid);
+                EditorPrefs.SetBool("Settings.IsStatic", IsStatic);
+
                 EditorPrefs.SetFloat("Settings.GridSize", GridSize);
                 EditorPrefs.SetInt("Settings.GeometryEditMode", (int)GeometryEditMode);
+                EditorPrefs.SetInt("Settings.GeometryLayerMask", GeometryLayerMask);
+
                 Utilities.SetEditorPrefAsset("Settings.BaseMaterial", BaseMaterial);
                 Utilities.SetEditorPrefAsset("Settings.SelectedTexture", SelectedTexture);
             }

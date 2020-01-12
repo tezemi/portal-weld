@@ -214,8 +214,23 @@ namespace PortalWeld.GeometryTool
                     meshGameObject.GetComponent<MeshRenderer>().sharedMaterial = new Material(EditingGeometry.transform.GetChild(i).GetComponent<MeshRenderer>().sharedMaterial);
                 }
 
+                meshGameObject.layer = Settings.GeometryLayerMask;
+                if (Settings.IsSolid)
+                {
+                    meshGameObject.AddComponent<BoxCollider>();
+                }
+
+                meshGameObject.isStatic = Settings.IsStatic;
+
                 meshGameObject.AddComponent<EditableTexture>();
+                
+                PortalWeldCallbacks.TextureApplied?.Invoke(meshGameObject.GetComponent<MeshRenderer>(), meshGameObject.GetComponent<MeshRenderer>().sharedMaterial.mainTexture);
+                PortalWeldCallbacks.MeshBuilt?.Invoke(meshGameObject.GetComponent<MeshFilter>());
             }
+
+            parentGameObject.isStatic = Settings.IsStatic;
+
+            PortalWeldCallbacks.GeometryBuilt?.Invoke(parentGameObject);
 
             Settings.LastBuiltGeometryData = new GeometryData(this);
 

@@ -74,6 +74,7 @@ namespace PortalWeld
                 foreach (var editableTexture in Utilities.GetManyFromSelection<EditableTexture>())
                 {
                     editableTexture.Material.mainTexture = Settings.SelectedTexture;
+                    PortalWeldCallbacks.TextureApplied?.Invoke(editableTexture.GetComponent<MeshRenderer>(), editableTexture.Material.mainTexture);
                 }
             }
             #endregion
