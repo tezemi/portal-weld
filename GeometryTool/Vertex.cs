@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PortalWeld.GeometryTool
 {
-    public class Vertex : GeometryObject
+    public class Vertex : GeometryEditorElement
     {
         [SerializeField]
         [HideInInspector]

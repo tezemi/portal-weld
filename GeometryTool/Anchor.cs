@@ -3,8 +3,17 @@ using UnityEngine;
 
 namespace PortalWeld.GeometryTool
 {
-    public class Anchor : GeometryObject
+    /// <inheritdoc />
+    /// <summary>
+    /// Component that remains at the center of a geometry editor, and 
+    /// moves all of the editor's elements when moved.
+    /// </summary>
+    public class Anchor : GeometryEditorElement
     {
+        /// <summary>
+        /// The center of the geometry editor, where this anchor should remain. 
+        /// The center is the average of all the vertices.
+        /// </summary>
         public Vector3 Center
         {
             get
@@ -35,6 +44,12 @@ namespace PortalWeld.GeometryTool
             Gizmos.DrawCube(Center, new Vector3(Size, Size, Size));
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// When the anchor is moved, all other elements of the editor are 
+        /// also moved.
+        /// </summary>
+        /// <param name="amount">The amount the anchor was moved.</param>
         protected override void OnMoved(Vector3 amount)
         {
             foreach (var vertex in GeometryEditor.Vertices)
@@ -53,7 +68,13 @@ namespace PortalWeld.GeometryTool
             }
         }
 
-        public override void GeometryUpdated(Vector3 difference)
+        /// <inheritdoc />
+        /// <summary>
+        /// When another element of the editor is moved, the anchor is remain 
+        /// in the center.
+        /// </summary>
+        /// <param name="amount">The amount the other element was moved.</param>
+        public override void GeometryUpdated(Vector3 amount)
         {
             transform.position = Center;
             if (Settings.SnapToGrid)
@@ -62,6 +83,11 @@ namespace PortalWeld.GeometryTool
             }
         }
 
+        /// <summary>
+        /// Creates a new anchor associated with the specified geometry editor.
+        /// </summary>
+        /// <param name="geometryEditor">The editor to associate the anchor with.</param>
+        /// <returns>The newly created anchor.</returns>
         public static Anchor Create(GeometryEditor geometryEditor)
         {
             var anchor = new GameObject("Geometry Editor", typeof(Anchor)).GetComponent<Anchor>();
@@ -69,7 +95,7 @@ namespace PortalWeld.GeometryTool
 
             anchor.transform.position = anchor.Center;
 
-            anchor.SnapToGrid();
+            anchor.SnapToGrid(); 
 
             anchor.PositionLastFrame = anchor.transform.position;
             

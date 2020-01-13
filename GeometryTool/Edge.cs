@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace PortalWeld.GeometryTool
 {
-    public class Edge : GeometryObject
+    public class Edge : GeometryEditorElement
     {
         [HideInInspector]
         public bool ShowLength;
@@ -48,11 +48,22 @@ namespace PortalWeld.GeometryTool
         protected override void OnMoved(Vector3 amount)
         {
             GeometryEditor.Anchor.GeometryUpdated(amount);
+
             Vertex1.GeometryUpdated(amount);
             Vertex2.GeometryUpdated(amount);
+
+            if (Settings.SnapToGrid)
+            {
+                Vertex1.SnapToGrid();
+                Vertex2.SnapToGrid();
+            }
+
             foreach (var edge in GeometryEditor.Edges)
             {
-                edge.GeometryUpdated(amount);
+                if (edge != this)
+                {
+                    edge.GeometryUpdated(amount);
+                }
             }
 
             foreach (var face in GeometryEditor.Faces)

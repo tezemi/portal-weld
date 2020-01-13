@@ -4,12 +4,28 @@ using UnityEngine;
 
 namespace PortalWeld.GeometryTool
 {
+    /// <summary>
+    /// Represents vertices, edges, and faces of a geometry editor in a 
+    /// serializable format.
+    /// </summary>
     [Serializable]
     public struct GeometryData
     {
+        /// <summary>
+        /// The position of the anchor component of a geometry editor.
+        /// </summary>
         public Vector3 AnchorPosition;
+        /// <summary>
+        /// Data representing all of the faces of a geometry editor.
+        /// </summary>
         public FaceData[] Faces;
+        /// <summary>
+        /// Data representing all of the edges of a geometry editor.
+        /// </summary>
         public EdgeData[] Edges;
+        /// <summary>
+        /// Data representing all of the vertex positions of a geometry editor.
+        /// </summary>
         public Vector3[] Vertices;
 
         public GeometryData(Vector3 anchorPosition, FaceData[] faces, EdgeData[] edges, Vector3[] vertices)
@@ -20,6 +36,11 @@ namespace PortalWeld.GeometryTool
             Vertices = vertices;
         }
 
+        /// <summary>
+        /// Creates a new geometry data using the specified geometry editor to 
+        /// get the data from.
+        /// </summary>
+        /// <param name="editor">The editor to get the data from.</param>
         public GeometryData(GeometryEditor editor)
         {
             AnchorPosition = editor.Anchor.transform.position;
@@ -77,6 +98,10 @@ namespace PortalWeld.GeometryTool
             }
         }
 
+        /// <summary>
+        /// Represents an edge by storing the positions of the two vertices 
+        /// that comprise the edge.
+        /// </summary>
         [Serializable]
         public struct EdgeData
         {
@@ -90,6 +115,10 @@ namespace PortalWeld.GeometryTool
             }
         }
 
+        /// <summary>
+        /// Represents a face by storing the positions of the vertices and 
+        /// triangles that comprise the face.
+        /// </summary>
         [Serializable]
         public struct FaceData
         {
@@ -105,6 +134,10 @@ namespace PortalWeld.GeometryTool
             }
         }
 
+        /// <summary>
+        /// Represents a triangle on a face by storing the position and order 
+        /// of the vertices.
+        /// </summary>
         [Serializable]
         public struct TriangleData
         {

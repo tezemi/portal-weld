@@ -21,11 +21,6 @@ namespace PortalWeld
         /// </summary>
         public static bool ShowMeshPreview { get; set; }
         /// <summary>
-        /// If true, geometry gizmo selectors will scale with the camera's 
-        /// distance.
-        /// </summary>
-        public static bool ShowDynamicGizmos { get; set; }
-        /// <summary>
         /// Whether or not created geometry should have a collider attached.
         /// </summary>
         public static bool IsSolid { get; set; }
@@ -48,7 +43,7 @@ namespace PortalWeld
         /// <summary>
         /// The data for the most recently built geometry.
         /// </summary>
-        public static GeometryData? LastBuiltGeometryData { get; set; }
+        public static Vector3? LastBuiltGeometryPosition { get; set; }
         /// <summary>
         /// The material to use as a base for newly created geometry.
         /// </summary>
@@ -63,7 +58,6 @@ namespace PortalWeld
         {
             SnapToGrid = EditorPrefs.GetBool("Settings.SnapToGrid", true);
             ShowMeshPreview = EditorPrefs.GetBool("Settings.ShowMeshPreview", false);
-            ShowDynamicGizmos = EditorPrefs.GetBool("Settings.ShowDynamicGizmos", false);
             IsSolid = EditorPrefs.GetBool("Settings.IsSolid", true);
             IsStatic = EditorPrefs.GetBool("Settings.IsStatic", true);
 
@@ -81,7 +75,6 @@ namespace PortalWeld
             {
                 EditorPrefs.SetBool("Settings.SnapToGrid", SnapToGrid);
                 EditorPrefs.SetBool("Settings.ShowMeshPreview", ShowMeshPreview);
-                EditorPrefs.SetBool("Settings.ShowDynamicGizmos", ShowDynamicGizmos);
                 EditorPrefs.SetBool("Settings.IsSolid", IsSolid);
                 EditorPrefs.SetBool("Settings.IsStatic", IsStatic);
 

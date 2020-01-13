@@ -13,13 +13,11 @@ namespace PortalWeld
     public static class MenuCommands
     {
         private const string ShowMeshPreviewPath = "Portal Weld/Geometry/Show Mesh Preview";
-        private const string ShowDynamicGizmosPath = "Portal Weld/Geometry/Show Dynamic Gizmos";
         private const string SnapToGridPath = "Portal Weld/Geometry/Snap to Grid";
 
         static MenuCommands()
         {
             Menu.SetChecked(ShowMeshPreviewPath, Settings.ShowMeshPreview);
-            Menu.SetChecked(ShowDynamicGizmosPath, Settings.ShowDynamicGizmos);
             Menu.SetChecked(SnapToGridPath, Settings.SnapToGrid);
         }
         
@@ -30,28 +28,11 @@ namespace PortalWeld
             Menu.SetChecked(ShowMeshPreviewPath, Settings.ShowMeshPreview);
         }
 
-        [MenuItem(ShowDynamicGizmosPath)]
-        private static void ShowDynamicGizmos()
-        {
-            Settings.ShowDynamicGizmos = !Settings.ShowDynamicGizmos;
-            Menu.SetChecked(ShowDynamicGizmosPath, Settings.ShowDynamicGizmos);
-        }
-
         [MenuItem(SnapToGridPath)]
         private static void SnapToGrid()
         {
             Settings.SnapToGrid = !Settings.SnapToGrid;
             Menu.SetChecked(SnapToGridPath, Settings.SnapToGrid);
-        }
-
-        [MenuItem("Portal Weld/Geometry/Edit Geometry #e")]
-        private static void EditGeometry()
-        {
-            if (Utilities.SelectionHas<BuiltGeometry>())
-            {
-                var builtGeometry = Utilities.GetFromSelection<BuiltGeometry>();
-                GeometryEditor.Create(builtGeometry);
-            }
         }
 
         [MenuItem("Portal Weld/Geometry/Bifurcate Edge #b")]
@@ -151,17 +132,10 @@ namespace PortalWeld
             }
         }
 
-        [MenuItem("GameObject/Portal Weld/Geometry Editor", false, 11)]
-        private static void CreateGeometry()
+        [MenuItem("GameObject/Portal Weld/New Cube", false, 11)]
+        private static void CreateCube()
         {
-            if (Settings.LastBuiltGeometryData.HasValue)
-            {
-                GeometryEditor.Create(Settings.LastBuiltGeometryData.Value);
-            }
-            else
-            {
-                GeometryEditor.Create();
-            }
+            GeometryEditor.Create(Shape.Cube, Settings.LastBuiltGeometryPosition ?? Vector3.zero);
         }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PortalWeld.GeometryTool
 {
-    public abstract class Face : GeometryObject
+    public abstract class Face : GeometryEditorElement
     {
         [HideInInspector]
         public Vertex[] Vertices = new Vertex[4];
@@ -47,6 +47,10 @@ namespace PortalWeld.GeometryTool
             foreach (var vertex in Vertices)
             {
                 vertex.GeometryUpdated(amount);
+                if (Settings.SnapToGrid)
+                {
+                    vertex.SnapToGrid();
+                }
             }
 
             foreach (var edge in GeometryEditor.Edges)
@@ -66,7 +70,6 @@ namespace PortalWeld.GeometryTool
         public override void GeometryUpdated(Vector3 difference)
         {
             transform.position = Center;
-            SnapToGrid();
         }
 
         protected static T CreateBaseFace<T>(GeometryEditor geometryEditor, params Vertex[] vertices) where T : Face
