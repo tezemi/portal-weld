@@ -35,7 +35,7 @@ namespace PortalWeld
             Menu.SetChecked(SnapToGridPath, Settings.SnapToGrid);
         }
 
-        [MenuItem("Portal Weld/Geometry/Bifurcate Edge #b")]
+        [MenuItem("Portal Weld/Geometry/Bifurcate Edge")]
         private static void BifurcateEdge()
         {
             foreach (var obj in Selection.objects)
@@ -49,7 +49,7 @@ namespace PortalWeld
             GeometryEditor.Current.MeshPreview.UpdatePreview();
         }
 
-        [MenuItem("Portal Weld/Geometry/Flip Triangle(s) #f")]
+        [MenuItem("Portal Weld/Geometry/Flip Triangle(s)")]
         private static void FlipTriangles()
         {
             if (Selection.activeGameObject.HasComponent<Face>())
@@ -69,7 +69,7 @@ namespace PortalWeld
             GeometryEditor.Current.MeshPreview.UpdatePreview();
         }
 
-        [MenuItem("Portal Weld/Geometry/Combine Faces #c")]
+        [MenuItem("Portal Weld/Geometry/Combine Faces")]
         private static void CombineFaces()
         {
             var selection = Utilities.Get2FromSelection<Face3>();
@@ -93,7 +93,7 @@ namespace PortalWeld
             }
         }
 
-        [MenuItem("Portal Weld/Geometry/Create Face %#c")]
+        [MenuItem("Portal Weld/Geometry/Create Face")]
         private static void CreateFace()
         {
             if (Selection.objects.Length == 3)
@@ -123,7 +123,7 @@ namespace PortalWeld
             }
         }
 
-        [MenuItem("Portal Weld/Show Hidden Objects %#&s")]
+        [MenuItem("Portal Weld/Show Hidden Objects")]
         private static void ShowHiddenObjects()
         {
             foreach (var obj in Object.FindObjectsOfType<GameObject>())
@@ -132,7 +132,7 @@ namespace PortalWeld
             }
         }
 
-        [MenuItem("GameObject/Portal Weld/New Cube", false, 11)]
+        [MenuItem("GameObject/Portal Weld/New Cube %#z", false, 11)]
         private static void CreateCube()
         {
             GeometryEditor.Create(Shape.Cube, Settings.LastBuiltGeometryPosition ?? Vector3.zero);

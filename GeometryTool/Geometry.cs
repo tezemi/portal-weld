@@ -39,9 +39,19 @@ namespace PortalWeld.GeometryTool
             // If anything else is clicked, delete the editor
             Selection.selectionChanged += () =>
             {
-                if ((Utilities.IsSelected<Geometry>() || Utilities.IsSelectedInParent<Geometry>()) && (GeometryEditor.Current == null || !GeometryEditor.Current.EditMode))
+                if (Utilities.IsSelected<Geometry>() || Utilities.IsSelectedInParent<Geometry>())
                 {
-                    GeometryEditor.Create(Utilities.GetFromSelection<Geometry>() ?? Utilities.GetFromSelectionParent<Geometry>());
+                    var selectedGeometry = Utilities.GetFromSelection<Geometry>() ?? Utilities.GetFromSelectionParent<Geometry>();
+                     
+                    if (GeometryEditor.Current == null || GeometryEditor.Current.GeometryBeingEdited != selectedGeometry || !GeometryEditor.Current.EditMode)
+                    {
+                        if (GeometryEditor.Current != null && GeometryEditor.Current.GeometryBeingEdited != selectedGeometry)
+                        {
+                            GeometryEditor.Current.Delete();
+                        }
+
+                        GeometryEditor.Create(selectedGeometry);
+                    }
                 }
                 else
                 {
