@@ -35,6 +35,25 @@ namespace PortalWeld
         }
 
         /// <summary>
+        /// Returns whether or not any of the selected game objects have the 
+        /// specified component type.
+        /// </summary>
+        /// <typeparam name="T">The type to check for.</typeparam>
+        /// <returns>True if any selected object has the specified component.</returns>
+        public static bool IsSelected<T>()
+        {
+            foreach (var gameObject in Selection.gameObjects)
+            {
+                if (gameObject.HasComponent<T>())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Checks to see if a game object as a component. Basically an alias 
         /// for GetComponent() != null.
         /// </summary>

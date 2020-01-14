@@ -294,6 +294,14 @@ namespace PortalWeld.GeometryTool
         }
         
         /// <summary>
+        /// Gets rid of this geometry editor and all of its elements.
+        /// </summary>
+        public void Delete()
+        {
+            DestroyImmediate(Anchor.gameObject);
+        }
+
+        /// <summary>
         /// Generates a mesh that looks like the defined geometry. Does not 
         /// assign textures, for that, use the BuildGeometry method.
         /// </summary>

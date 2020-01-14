@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 namespace PortalWeld.GeometryTool
@@ -16,13 +17,22 @@ namespace PortalWeld.GeometryTool
         [HideInInspector]
         public GeometryData GeometryData;
 
-        protected virtual void OnGUI()
+        protected virtual void Awake()
         {
-            // Created a new editor when geometry is selected
-            if (Utilities.IsSelected(this) && (GeometryEditor.Current == null || !GeometryEditor.Current.EditMode))
+            // Create a new editor when geometry is selected
+            Selection.selectionChanged = () =>
             {
-                GeometryEditor.Create(this);
-            }
+                if (Utilities.IsSelected(this) && (GeometryEditor.Current == null || !GeometryEditor.Current.EditMode))
+                {
+                    GeometryEditor.Create(this);
+                }
+                //else if (Selection.activeGameObject == null || GeometryEditor.Current != null && GeometryEditor.Current.GeometryBeingEdited == this && 
+                //!Selection.activeGameObject.HasComponent<GeometryEditorElement>() && !Selection.activeGameObject.HasComponent<Geometry>() &&
+                //Selection.activeGameObject.GetComponentInParent<Geometry>() != null)
+                //{
+                //    GeometryEditor.Current.Delete();
+                //}
+            };
         }
 
         /// <summary>
@@ -39,6 +49,25 @@ namespace PortalWeld.GeometryTool
             builtGeometry.GeometryData = new GeometryData(editor);
 
             return builtGeometry;
+        }
+
+        static Geometry()
+        {
+            Selection.selectionChanged = () =>
+            {
+                if (Utilities.IsSelected<Geometry>() && (GeometryEditor.Current == null || !GeometryEditor.Current.EditMode))
+                {
+                    GeometryEditor.Create(Utilities.GetFromSelection<Geometry>());
+                }
+
+
+                //else if (Selection.activeGameObject == null || GeometryEditor.Current != null && GeometryEditor.Current.GeometryBeingEdited == this && 
+                //!Selection.activeGameObject.HasComponent<GeometryEditorElement>() && !Selection.activeGameObject.HasComponent<Geometry>() &&
+                //Selection.activeGameObject.GetComponentInParent<Geometry>() != null)
+                //{
+                //    GeometryEditor.Current.Delete();
+                //}
+            };
         }
     }
 }
