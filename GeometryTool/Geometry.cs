@@ -17,24 +17,6 @@ namespace PortalWeld.GeometryTool
         [HideInInspector]
         public GeometryData GeometryData;
 
-        protected virtual void Awake()
-        {
-            // Create a new editor when geometry is selected
-            Selection.selectionChanged = () =>
-            {
-                if (Utilities.IsSelected(this) && (GeometryEditor.Current == null || !GeometryEditor.Current.EditMode))
-                {
-                    GeometryEditor.Create(this);
-                }
-                //else if (Selection.activeGameObject == null || GeometryEditor.Current != null && GeometryEditor.Current.GeometryBeingEdited == this && 
-                //!Selection.activeGameObject.HasComponent<GeometryEditorElement>() && !Selection.activeGameObject.HasComponent<Geometry>() &&
-                //Selection.activeGameObject.GetComponentInParent<Geometry>() != null)
-                //{
-                //    GeometryEditor.Current.Delete();
-                //}
-            };
-        }
-
         /// <summary>
         /// Creates a new geometry component on the specified game object, 
         /// using data from the specified editor.
@@ -53,20 +35,25 @@ namespace PortalWeld.GeometryTool
 
         static Geometry()
         {
-            Selection.selectionChanged = () =>
+            // When geometry is clicked, create an editor for it
+            // If anything else is clicked, delete the editor
+            Selection.selectionChanged += () =>
             {
-                if (Utilities.IsSelected<Geometry>() && (GeometryEditor.Current == null || !GeometryEditor.Current.EditMode))
+                if ((Utilities.IsSelected<Geometry>() || Utilities.IsSelectedInParent<Geometry>()) && (GeometryEditor.Current == null || !GeometryEditor.Current.EditMode))
                 {
-                    GeometryEditor.Create(Utilities.GetFromSelection<Geometry>());
+                    GeometryEditor.Create(Utilities.GetFromSelection<Geometry>() ?? Utilities.GetFromSelectionParent<Geometry>());
                 }
+                else
+                {
+                    if (GeometryEditor.Current == null || !GeometryEditor.Current.EditMode)
+                        return;
 
-
-                //else if (Selection.activeGameObject == null || GeometryEditor.Current != null && GeometryEditor.Current.GeometryBeingEdited == this && 
-                //!Selection.activeGameObject.HasComponent<GeometryEditorElement>() && !Selection.activeGameObject.HasComponent<Geometry>() &&
-                //Selection.activeGameObject.GetComponentInParent<Geometry>() != null)
-                //{
-                //    GeometryEditor.Current.Delete();
-                //}
+                    if (Selection.activeGameObject != null && (Utilities.IsSelected<GeometryEditor>() || 
+                    Utilities.IsSelected<GeometryEditorElement>() || Selection.activeGameObject.GetComponentInParent<Geometry>() != null))
+                        return;
+                    
+                    GeometryEditor.Current.Delete();
+                }
             };
         }
     }

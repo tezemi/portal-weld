@@ -54,6 +54,25 @@ namespace PortalWeld
         }
 
         /// <summary>
+        /// Whether or not the component of the specified type is part of any 
+        /// selected game object's parent
+        /// </summary>
+        /// <typeparam name="T">The type of component to check for.</typeparam>
+        /// <returns>True if the component was found.</returns>
+        public static bool IsSelectedInParent<T>()
+        {
+            foreach (var obj in Selection.objects)
+            {
+                if (obj is GameObject gameObject && gameObject.GetComponentInParent<T>() != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Checks to see if a game object as a component. Basically an alias 
         /// for GetComponent() != null.
         /// </summary>
@@ -64,26 +83,7 @@ namespace PortalWeld
         {
             return obj.GetComponent<T>() != null;
         }
-
-        /// <summary>
-        /// Whether or not the component of the specified type is part of any 
-        /// selected game object.
-        /// </summary>
-        /// <typeparam name="T">The type to look for.</typeparam>
-        /// <returns>True if any selected game object has the component.</returns>
-        public static bool SelectionHas<T>() where T : Component
-        {
-            foreach (var obj in Selection.objects)
-            {
-                if (obj is GameObject gameObject && gameObject.HasComponent<T>())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
+        
         /// <summary>
         /// Converts a number within a specified range to its equivalent 
         /// position within another range.
@@ -255,6 +255,25 @@ namespace PortalWeld
             }
 
             return list;
+        }
+
+        /// <summary>
+        /// Gets a component of the specified type from the selected game 
+        /// objects' parents.
+        /// </summary>
+        /// <typeparam name="T">The type of component tot get.</typeparam>
+        /// <returns>The component if it is found.</returns>
+        public static T GetFromSelectionParent<T>() where T : class
+        {
+            foreach (var gameObject in Selection.gameObjects)
+            {
+                if (gameObject.GetComponentInParent<T>() != null)
+                {
+                    return gameObject.GetComponentInParent<T>();
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

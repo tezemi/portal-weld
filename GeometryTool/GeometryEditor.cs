@@ -456,7 +456,7 @@ namespace PortalWeld.GeometryTool
         {
             var isRebuild = false;
             GeometryEditor editor;
-            if (Current == null)
+            if (Current == null || !Current.EditMode)
             {
                 editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>();
             }

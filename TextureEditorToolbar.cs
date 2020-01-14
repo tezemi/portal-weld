@@ -51,7 +51,7 @@ namespace PortalWeld
             #region Texture Manipulation
             EditorGUILayout.BeginVertical(GUILayout.Width(300f));
 
-            if (Utilities.SelectionHas<EditableTexture>())
+            if (Utilities.IsSelected<EditableTexture>())
             {
                 var editableTexture = Utilities.GetFromSelection<EditableTexture>();
                 editableTexture.Tiling = EditorGUILayout.Vector2Field("Texture Tiling", editableTexture.Tiling);
@@ -69,7 +69,7 @@ namespace PortalWeld
             #endregion
 
             #region Apply Button
-            if (GUILayout.Button("Apply\nTexture", GUILayout.Width(ButtonSize), GUILayout.Height(ButtonSize)) && Utilities.SelectionHas<EditableTexture>())
+            if (GUILayout.Button("Apply\nTexture", GUILayout.Width(ButtonSize), GUILayout.Height(ButtonSize)) && Utilities.IsSelected<EditableTexture>())
             {
                 foreach (var editableTexture in Utilities.GetManyFromSelection<EditableTexture>())
                 {
