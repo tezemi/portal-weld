@@ -28,6 +28,16 @@ namespace PortalWeld.GeometryTool
         /// </summary>
         protected virtual float DynamicGizmoScale  { get; } = 0.025f;
         /// <summary>
+        /// The smallest any gizmos will be drawn, even if the scene camera is 
+        /// very close.
+        /// </summary>
+        protected virtual float MinGizmoSize { get; } = 0.15f;
+        /// <summary>
+        /// The largest any gizmos will be drawn, even if the scene camera is 
+        /// very far away.
+        /// </summary>
+        protected virtual float MaxGizmoSize { get; } = 3f;
+        /// <summary>
         /// The color to draw this element when it is not selected.
         /// </summary>
         protected virtual Color UnselectedGizmoColor { get; } = Color.white;
@@ -43,10 +53,27 @@ namespace PortalWeld.GeometryTool
         /// The offset at which to draw text gizmos from this element.
         /// </summary>
         protected virtual Vector3 PositionTextOffset { get; } = new Vector3(1f, 1f, 1f);
+
         /// <summary>
         /// The actual size to draw this element's gizmos.
         /// </summary>
-        protected virtual float Size => Vector3.Distance(transform.position, Camera.current.transform.position) * DynamicGizmoScale;
+        protected virtual float Size
+        {
+            get
+            {
+                var size = SceneView.lastActiveSceneView.orthographic ? 1f : Vector3.Distance(transform.position, Camera.current.transform.position) * DynamicGizmoScale;
+                if (size > MaxGizmoSize)
+                {
+                    size = MaxGizmoSize;
+                }
+                else if (size < MinGizmoSize)
+                {
+                    size = MinGizmoSize;
+                }
+
+                return size;
+            }
+        } 
 
         protected virtual void Update()
         {
