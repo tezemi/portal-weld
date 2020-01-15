@@ -1,4 +1,6 @@
 ﻿#if UNITY_EDITOR
+using PortalWeld.GeometryTool;
+using UnityEditor;
 using UnityEngine;
 
 namespace PortalWeld.TextureTool
@@ -12,7 +14,8 @@ namespace PortalWeld.TextureTool
         public Material Material;
         protected const string MainTexProperty = "_MainTex";
         protected const string RotationProperty = "_Rotation";
-        
+        private static Texture _lastSelectedTexture;
+
         public float Rotation
         {
             get
@@ -61,6 +64,25 @@ namespace PortalWeld.TextureTool
                 mesh.bounds.size.x == 0f ? mesh.bounds.size.z / 2f : mesh.bounds.size.x / 2f,
                 mesh.bounds.size.y == 0f ? mesh.bounds.size.z / 2f : mesh.bounds.size.y / 2f
             );
+        }
+
+        static EditableTexture()
+        {
+            // When selecting a new face, the previous face's texture will be placed in the 
+            // texture menu
+            Selection.selectionChanged += () =>
+            {
+                if (Utilities.IsSelected<EditableTexture>())
+                {
+                    if (_lastSelectedTexture != null)
+                    {
+                        Settings.SelectedTexture = _lastSelectedTexture;
+                    }
+
+                    var texture = Utilities.GetFromSelection<EditableTexture>().Material.mainTexture;
+                    _lastSelectedTexture = texture;
+                }
+            };
         }
     }
 }

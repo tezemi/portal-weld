@@ -17,6 +17,14 @@ namespace PortalWeld.GeometryTool
         [HideInInspector]
         public GeometryData GeometryData;
 
+        protected virtual void OnDrawGizmos()
+        {
+            foreach (var edge in GeometryData.Edges)
+            {
+                Debug.DrawLine(edge.Vertex1, edge.Vertex2, Color.red, 0.06f);
+            }
+        }
+
         /// <summary>
         /// Creates a new geometry component on the specified game object, 
         /// using data from the specified editor.
