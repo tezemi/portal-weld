@@ -53,6 +53,12 @@ namespace PortalWeld.GeometryTool
         /// The offset at which to draw text gizmos from this element.
         /// </summary>
         protected virtual Vector3 PositionTextOffset { get; } = new Vector3(1f, 1f, 1f);
+        /// <summary>
+        /// Gizmo size without concern for the maximum and minimum.
+        /// </summary>
+        protected virtual float UncappedSize => Vector3.Distance(transform.position, Camera.current.transform.position) * DynamicGizmoScale;
+
+        //public Vector3 OrthographicPosition => SceneView.lastActiveSceneView.camera.transform.forward * 10f;
 
         /// <summary>
         /// The actual size to draw this element's gizmos.
@@ -74,7 +80,7 @@ namespace PortalWeld.GeometryTool
                 return size;
             }
         } 
-
+        
         protected virtual void Update()
         {
             if (Utilities.IsSelected(this) && transform.position != PositionLastFrame)
@@ -88,7 +94,7 @@ namespace PortalWeld.GeometryTool
                 if (transform.position != PositionLastFrame) 
                 {
                     GeometryEditor.MeshPreview.UpdatePreview();         // Update the preview
-                    OnMoved(transform.position - PositionLastFrame);    // Tells all other elements that something changed
+                    OnMoved(transform.position - PositionLastFrame);
 
                     if (GeometryEditor.EditMode)
                     {

@@ -15,7 +15,7 @@ namespace PortalWeld.GeometryTool
         public bool HasVertices => Vertex1 != null && Vertex2 != null;
         public float Length => Vector3.Distance(Vertex1.transform.position, Vertex2.transform.position);
         protected Vector3 Midpoint => (Vertex1.transform.position + Vertex2.transform.position) / 2f;
-        protected Vector3 LengthTextOffset => new Vector3(Size + 0.5f, 0f, Size + 0.5f);
+        protected Vector3 LengthTextOffset => new Vector3(UncappedSize + 0.75f, 0f, UncappedSize + 0.75f);
 
         protected virtual void OnDestroy()
         {
@@ -31,7 +31,28 @@ namespace PortalWeld.GeometryTool
                 return;
             }
 
-            Debug.DrawLine(Vertex1.transform.position, Vertex2.transform.position, Color.white);
+            if (SceneView.lastActiveSceneView.orthographic)
+            {
+                var point1 = new Vector3
+                (
+                    Vertex1.transform.position.x,
+                    SceneView.lastActiveSceneView.camera.transform.position.y - 10f,
+                    Vertex1.transform.position.z
+                );
+
+                var point2 = new Vector3
+                (
+                    Vertex2.transform.position.x,
+                    SceneView.lastActiveSceneView.camera.transform.position.y - 10f,
+                    Vertex2.transform.position.z
+                );
+
+                Debug.DrawLine(point1, point2, Color.white);
+            }
+            else
+            {
+                Debug.DrawLine(Vertex1.transform.position, Vertex2.transform.position, Color.white);
+            }
 
             if (Settings.GeometryEditMode == GeometryEditMode.Edge)
             {

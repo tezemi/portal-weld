@@ -72,6 +72,12 @@ namespace PortalWeld.GeometryTool
             transform.position = Center;
         }
 
+        public void MoveTo(Vector3 pos)
+        {
+            transform.position = pos;
+            OnMoved(transform.position - PositionLastFrame);
+        }
+
         protected static T CreateBaseFace<T>(GeometryEditor geometryEditor, params Vertex[] vertices) where T : Face
         {
             var face = CreateBase<T>(geometryEditor);

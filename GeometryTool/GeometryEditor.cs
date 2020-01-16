@@ -63,6 +63,11 @@ namespace PortalWeld.GeometryTool
         /// </summary>
         [HideInInspector]
         public List<Vertex> Vertices = new List<Vertex>();
+        /// <summary>
+        /// All of the 2D vertices assosciated with this geometry.
+        /// </summary>
+        [HideInInspector]
+        public List<Vertex2D> Vertices2D = new List<Vertex2D>();
         private static GeometryEditor _current;
 
         /// <summary>
@@ -119,6 +124,11 @@ namespace PortalWeld.GeometryTool
                 cleanup.Add(face.gameObject);
             }
 
+            foreach (var vert in Vertices2D)
+            {
+                cleanup.Add(vert.gameObject);
+            }
+
             foreach (var clean in cleanup)
             {
                 DestroyImmediate(clean);
@@ -168,11 +178,16 @@ namespace PortalWeld.GeometryTool
             Face4.Create(this, new Triangle(Vertices[0], Vertices[2], Vertices[1]), new Triangle(Vertices[2], Vertices[3], Vertices[1]));   // top
             Face4.Create(this, new Triangle(Vertices[6], Vertices[4], Vertices[7]), new Triangle(Vertices[4], Vertices[5], Vertices[7]));   // bottom
 
-            Face4.Create(this, new Triangle(Vertices[6], Vertices[2], Vertices[4]), new Triangle(Vertices[2], Vertices[0], Vertices[4]));   // front
-            Face4.Create(this, new Triangle(Vertices[5], Vertices[1], Vertices[7]), new Triangle(Vertices[1], Vertices[3], Vertices[7]));   // back
+            var front = Face4.Create(this, new Triangle(Vertices[6], Vertices[2], Vertices[4]), new Triangle(Vertices[2], Vertices[0], Vertices[4]));   // front
+            var back = Face4.Create(this, new Triangle(Vertices[5], Vertices[1], Vertices[7]), new Triangle(Vertices[1], Vertices[3], Vertices[7]));   // back
 
-            Face4.Create(this, new Triangle(Vertices[4], Vertices[0], Vertices[5]), new Triangle(Vertices[0], Vertices[1], Vertices[5]));   // right
-            Face4.Create(this, new Triangle(Vertices[7], Vertices[3], Vertices[6]), new Triangle(Vertices[3], Vertices[2], Vertices[6]));   // left
+            var left = Face4.Create(this, new Triangle(Vertices[4], Vertices[0], Vertices[5]), new Triangle(Vertices[0], Vertices[1], Vertices[5]));   // right
+            var right = Face4.Create(this, new Triangle(Vertices[7], Vertices[3], Vertices[6]), new Triangle(Vertices[3], Vertices[2], Vertices[6]));   // left
+
+            Vertex2D.Create(this, front, null);
+            Vertex2D.Create(this, back, null);
+            Vertex2D.Create(this, left, null);
+            Vertex2D.Create(this, right, null);
 
             // Create anchor point
             Anchor = Anchor.Create(this);
