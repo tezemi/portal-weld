@@ -175,8 +175,8 @@ namespace PortalWeld.GeometryTool
 
             // Create the face objects
             // Order of vertices within triangles is important, defines normals, UVs
-            Face4.Create(this, new Triangle(Vertices[0], Vertices[2], Vertices[1]), new Triangle(Vertices[2], Vertices[3], Vertices[1]));   // top
-            Face4.Create(this, new Triangle(Vertices[6], Vertices[4], Vertices[7]), new Triangle(Vertices[4], Vertices[5], Vertices[7]));   // bottom
+            var top = Face4.Create(this, new Triangle(Vertices[0], Vertices[2], Vertices[1]), new Triangle(Vertices[2], Vertices[3], Vertices[1]));   // top
+            var bottom = Face4.Create(this, new Triangle(Vertices[6], Vertices[4], Vertices[7]), new Triangle(Vertices[4], Vertices[5], Vertices[7]));   // bottom
 
             var front = Face4.Create(this, new Triangle(Vertices[6], Vertices[2], Vertices[4]), new Triangle(Vertices[2], Vertices[0], Vertices[4]));   // front
             var back = Face4.Create(this, new Triangle(Vertices[5], Vertices[1], Vertices[7]), new Triangle(Vertices[1], Vertices[3], Vertices[7]));   // back
@@ -184,10 +184,14 @@ namespace PortalWeld.GeometryTool
             var left = Face4.Create(this, new Triangle(Vertices[4], Vertices[0], Vertices[5]), new Triangle(Vertices[0], Vertices[1], Vertices[5]));   // right
             var right = Face4.Create(this, new Triangle(Vertices[7], Vertices[3], Vertices[6]), new Triangle(Vertices[3], Vertices[2], Vertices[6]));   // left
 
-            Vertex2D.Create(this, front, null);
-            Vertex2D.Create(this, back, null);
-            Vertex2D.Create(this, left, null);
-            Vertex2D.Create(this, right, null);
+            Vertex2D.Create(this, front, ViewSide.Top | ViewSide.Front);
+            Vertex2D.Create(this, back, ViewSide.Top | ViewSide.Front);
+
+            Vertex2D.Create(this, left, ViewSide.Top | ViewSide.Side);
+            Vertex2D.Create(this, right, ViewSide.Top | ViewSide.Side);
+
+            Vertex2D.Create(this, top, ViewSide.Front | ViewSide.Side);
+            Vertex2D.Create(this, bottom, ViewSide.Front | ViewSide.Side);
 
             // Create anchor point
             Anchor = Anchor.Create(this);

@@ -33,28 +33,16 @@ namespace PortalWeld.GeometryTool
 
             if (SceneView.lastActiveSceneView.orthographic)
             {
-                var point1 = new Vector3
-                (
-                    Vertex1.transform.position.x,
-                    SceneView.lastActiveSceneView.camera.transform.position.y - 10f,
-                    Vertex1.transform.position.z
-                );
-
-                var point2 = new Vector3
-                (
-                    Vertex2.transform.position.x,
-                    SceneView.lastActiveSceneView.camera.transform.position.y - 10f,
-                    Vertex2.transform.position.z
-                );
-
-                Debug.DrawLine(point1, point2, Color.white);
+                Handles.color = Color.white;
+                Handles.DrawLine(ConvertToViewPoint(Vertex1.transform.position), ConvertToViewPoint(Vertex2.transform.position));
             }
             else
             {
-                Debug.DrawLine(Vertex1.transform.position, Vertex2.transform.position, Color.white);
+                Handles.color = Color.white;
+                Handles.DrawLine(Vertex1.transform.position, Vertex2.transform.position);
             }
 
-            if (Settings.GeometryEditMode == GeometryEditMode.Edge)
+            if (Settings.GeometryEditMode == GeometryEditMode.Edge && !SceneView.lastActiveSceneView.orthographic)
             {
                 Gizmos.DrawSphere((Vertex1.transform.position + Vertex2.transform.position) / 2f, Size);   
             }

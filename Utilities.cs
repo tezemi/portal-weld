@@ -300,6 +300,30 @@ namespace PortalWeld
         {
             return AssetDatabase.LoadAssetAtPath<T>(EditorPrefs.GetString(key, fallback));
         }
+
+        /// <summary>
+        /// Gets the view side of the last scene renderer.
+        /// </summary>
+        /// <returns>The view side.</returns>
+        public static ViewSide GetCurrentViewSide()
+        {
+            if (!SceneView.lastActiveSceneView.orthographic)
+            {
+                return ViewSide.None;
+            }
+
+            if (SceneView.lastActiveSceneView.camera.transform.rotation.eulerAngles.x == 90f)
+            {
+                return ViewSide.Top;
+            }
+
+            if (SceneView.lastActiveSceneView.camera.transform.rotation.eulerAngles.y == 270f)
+            {
+                return ViewSide.Side;
+            }
+
+            return ViewSide.Front;
+        }
     }
 }
 #endif

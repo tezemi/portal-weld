@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
+using UnityEditor;
 
 namespace PortalWeld.GeometryTool
 {
@@ -35,7 +36,7 @@ namespace PortalWeld.GeometryTool
         protected override void OnDrawGizmos()
         {
             base.OnDrawGizmos();
-            if (Settings.GeometryEditMode == GeometryEditMode.Face)
+            if (Settings.GeometryEditMode == GeometryEditMode.Face && !SceneView.lastActiveSceneView.orthographic)
             {
                 Gizmos.DrawSphere(Center, Size);
             }

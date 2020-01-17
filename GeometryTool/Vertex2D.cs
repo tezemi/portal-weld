@@ -13,49 +13,50 @@ namespace PortalWeld.GeometryTool
     public class Vertex2D : GeometryEditorElement
     {
         [HideInInspector]
-        public Face Face1;
+        public ViewSide ViewSide;
         [HideInInspector]
-        public Face Face2;
+        public Face Face;
+        [HideInInspector]
+        public Vertex2D Vertex1;
+        [HideInInspector]
+        public Vertex2D Vertex2;
+
 
         protected virtual void OnRenderObject()
         {
             transform.position = GetPosition();
-            Debug.Log(GetPosition());
         }
 
         protected override void OnDrawGizmos()
         {
+            if (!ViewSide.HasFlag(Utilities.GetCurrentViewSide())) return;
+
             base.OnDrawGizmos();
             if (SceneView.lastActiveSceneView.orthographic)
             {
-                Gizmos.DrawCube(GetPosition(), new Vector3(Size, Size, Size));
+                Gizmos.DrawCube(GetRenderPosition(), new Vector3(Size, Size, Size));
             }
         }
 
         protected override void OnMoved(Vector3 amount)
         {
-            if (Face2 == null)
+            if (Vertex1 == null || Vertex2 == null)
             {
-                Face1.MoveTo(new Vector3
-                (
-                    transform.position.x,
-                    Face1.transform.position.y,
-                    transform.position.z
-                ));
+                Face.MoveTo(transform.position);
             }
             else
             {
-                Face1.transform.position = new Vector3
+                Vertex1.Face.transform.position = new Vector3
                 (
                     transform.position.x,
-                    Face1.transform.position.y,
-                    Face1.transform.position.z
+                    Vertex1.Face.transform.position.y,
+                    Vertex1.Face.transform.position.z
                 );
 
-                Face2.transform.position = new Vector3
+                Vertex2.Face.transform.position = new Vector3
                 (
-                    Face2.transform.position.x,
-                    Face2.transform.position.y,
+                    Vertex2.Face.transform.position.x,
+                    Vertex2.Face.transform.position.y,
                     transform.position.z
                 );
             }
@@ -73,32 +74,47 @@ namespace PortalWeld.GeometryTool
 
         public Vector3 GetPosition()
         {
-            var sceneCamera = SceneView.lastActiveSceneView.camera;
-
-            if (Face2 == null)
+            if (Vertex1 == null || Vertex2 == null)
             {
-                return new Vector3
-                (
-                    Face1.transform.position.x,
-                    sceneCamera.transform.position.y - 10f, 
-                    Face1.transform.position.z
-                );
+                return Face.transform.position;
             }
 
-            return new Vector3
-            (
-                Face1.transform.position.x,
-                sceneCamera.transform.position.y - 10f,
-                Face2.transform.position.z
-            );
+            return (Vertex1.Face.transform.position + Vertex2.Face.transform.position) / 2f;
         }
 
-        public static Vertex2D Create(GeometryEditor editor, Face face1, Face face2)
+        public Vector3 GetRenderPosition()
+        {
+            if (Vertex1 == null || Vertex2 == null)
+            {
+                return ConvertToViewPoint(Face.transform.position);
+            }
+
+            return (Vertex1.Face.transform.position + Vertex2.Face.transform.position) / 2f;
+        }
+        
+        public static Vertex2D Create(GeometryEditor editor, Face face, ViewSide viewSide)
         {
             var vertex2D = CreateBase<Vertex2D>(editor);
 
-            vertex2D.Face1 = face1;
-            vertex2D.Face2 = face2;
+            vertex2D.Face = face;
+            vertex2D.ViewSide = viewSide;
+
+            vertex2D.transform.position = vertex2D.GetPosition();
+            vertex2D.PositionLastFrame = vertex2D.GetPosition();
+
+            editor.Vertices2D.Add(vertex2D);
+            vertex2D.name += $" {editor.Vertices2D.IndexOf(vertex2D)}";
+
+            return vertex2D;
+        }
+
+        public static Vertex2D Create(GeometryEditor editor, Vertex2D vertex1, Vertex2D vertex2, ViewSide viewSide)
+        {
+            var vertex2D = CreateBase<Vertex2D>(editor);
+
+            vertex2D.Vertex1 = vertex1;
+            vertex2D.Vertex2 = vertex2;
+            vertex2D.ViewSide = viewSide;
 
             vertex2D.transform.position = vertex2D.GetPosition();
             vertex2D.PositionLastFrame = vertex2D.GetPosition();

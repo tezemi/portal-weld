@@ -57,9 +57,7 @@ namespace PortalWeld.GeometryTool
         /// Gizmo size without concern for the maximum and minimum.
         /// </summary>
         protected virtual float UncappedSize => Vector3.Distance(transform.position, Camera.current.transform.position) * DynamicGizmoScale;
-
-        //public Vector3 OrthographicPosition => SceneView.lastActiveSceneView.camera.transform.forward * 10f;
-
+        
         /// <summary>
         /// The actual size to draw this element's gizmos.
         /// </summary>
@@ -131,6 +129,29 @@ namespace PortalWeld.GeometryTool
                 difference.y != 0f ? Mathf.Round(transform.position.y / Settings.GridSize) * Settings.GridSize : transform.position.y,
                 difference.z != 0f ? Mathf.Round(transform.position.z / Settings.GridSize) * Settings.GridSize : transform.position.z
             );
+        }
+
+        /// <summary>
+        /// Takes the specified points and converts it to the same point but 
+        /// with respect to the 2d view side.
+        /// </summary>
+        /// <param name="vector">The point to converte</param>
+        /// <returns>The converted point.</returns>
+        public Vector3 ConvertToViewPoint(Vector3 vector)
+        {
+            switch (Utilities.GetCurrentViewSide())
+            {
+                case ViewSide.None:
+                    return vector;
+                case ViewSide.Top:
+                    return new Vector3(vector.x, SceneView.lastActiveSceneView.camera.transform.position.y - 10f, vector.z);
+                case ViewSide.Front:
+                    return new Vector3(vector.x, vector.y, SceneView.lastActiveSceneView.camera.transform.position.z - 10f);
+                case ViewSide.Side:
+                    return new Vector3(SceneView.lastActiveSceneView.camera.transform.position.x - 10f, vector.y, vector.z);
+                default:
+                    return vector;
+            }
         }
 
         /// <summary>
