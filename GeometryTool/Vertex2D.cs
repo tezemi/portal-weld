@@ -1,10 +1,10 @@
 ﻿#if UNITY_EDITOR
-
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 
 namespace PortalWeld.GeometryTool
 {
+    /// <inheritdoc />
     /// <summary>
     /// Component used in 2D geometry editing purely for manipulation. 
     /// Unlike actual vertices, this component is not used when creating
@@ -17,8 +17,15 @@ namespace PortalWeld.GeometryTool
         [HideInInspector]
         public Face Face2;
 
+        protected virtual void OnRenderObject()
+        {
+            transform.position = GetPosition();
+            Debug.Log(GetPosition());
+        }
+
         protected override void OnDrawGizmos()
         {
+            base.OnDrawGizmos();
             if (SceneView.lastActiveSceneView.orthographic)
             {
                 Gizmos.DrawCube(GetPosition(), new Vector3(Size, Size, Size));

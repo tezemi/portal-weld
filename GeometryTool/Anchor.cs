@@ -66,6 +66,11 @@ namespace PortalWeld.GeometryTool
             {
                 face.GeometryUpdated(amount);
             }
+
+            foreach (var vertex in GeometryEditor.Vertices2D)
+            {
+                vertex.GeometryUpdated(amount);
+            }
         }
 
         /// <inheritdoc />

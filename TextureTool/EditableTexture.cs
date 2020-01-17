@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using PortalWeld.GeometryTool;
 using UnityEditor;
 using UnityEngine;
 
