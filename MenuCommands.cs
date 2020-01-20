@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System.Linq;
 using PortalWeld.GeometryTool;
+using PortalWeld.TextureTool;
 using UnityEngine;
 using UnityEditor;
 using Object = UnityEngine.Object;
@@ -121,6 +122,37 @@ namespace PortalWeld
                     Face4.Create(vertices.Item1.GeometryEditor, new Triangle(vertexArray[0], vertexArray[1], vertexArray[2]), new Triangle(vertexArray[3], vertexArray[2], vertexArray[1]));
                 }
             }
+        }
+
+        [MenuItem("Portal Weld/Geometry/Duplicate %#d")]
+        private static void Duplicate()
+        {
+            Geometry geometry = null;
+            if (Utilities.IsSelected<Geometry>())
+            {
+                geometry = Utilities.GetFromSelection<Geometry>();
+            }
+            else if (Utilities.IsSelected<EditableTexture>())
+            {
+                geometry = Utilities.GetFromSelectionParent<Geometry>();
+            }
+            else if (Utilities.IsSelected<GeometryEditor>())
+            {
+                var editor = Utilities.GetFromSelection<GeometryEditor>();
+                if (editor.EditMode)
+                {
+                    geometry = editor.GeometryBeingEdited;
+                }
+            }
+
+            if (geometry == null)
+            {
+                return;
+            }
+
+            var copy = Object.Instantiate(geometry.gameObject);
+            GeometryEditor.Create(copy.GetComponent<Geometry>());
+            Selection.activeGameObject = copy;
         }
 
         [MenuItem("Portal Weld/Show Hidden Objects")]

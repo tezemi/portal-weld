@@ -47,10 +47,8 @@ namespace PortalWeld.GeometryTool
             {
                 Gizmos.DrawCube(ConvertToViewPoint(Center), new Vector3(Size, Size, Size));
             }
-            else
-            {
-                Gizmos.DrawCube(Center, new Vector3(Size, Size, Size));
-            }
+            
+            Gizmos.DrawCube(Center, new Vector3(Size, Size, Size));
         }
 
         /// <inheritdoc />

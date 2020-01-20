@@ -31,16 +31,13 @@ namespace PortalWeld.GeometryTool
                 return;
             }
 
+            Handles.color = Color.white;
             if (SceneView.lastActiveSceneView.orthographic)
             {
-                Handles.color = Color.white;
                 Handles.DrawLine(ConvertToViewPoint(Vertex1.transform.position), ConvertToViewPoint(Vertex2.transform.position));
             }
-            else
-            {
-                Handles.color = Color.white;
-                Handles.DrawLine(Vertex1.transform.position, Vertex2.transform.position);
-            }
+
+            Handles.DrawLine(Vertex1.transform.position, Vertex2.transform.position);
 
             if (Settings.GeometryEditMode == GeometryEditMode.Edge && !SceneView.lastActiveSceneView.orthographic)
             {

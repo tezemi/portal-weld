@@ -26,7 +26,7 @@ namespace PortalWeld.GeometryTool
         /// A scale used to draw this element's gizmos relative to the 
         /// camera's distance.
         /// </summary>
-        protected virtual float DynamicGizmoScale  { get; } = 0.025f;
+        protected virtual float DynamicGizmoScale  { get; } = 0.04f;
         /// <summary>
         /// The smallest any gizmos will be drawn, even if the scene camera is 
         /// very close.
