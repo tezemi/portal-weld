@@ -151,8 +151,14 @@ namespace PortalWeld
             }
 
             var copy = Object.Instantiate(geometry.gameObject);
-            GeometryEditor.Create(copy.GetComponent<Geometry>());
-            Selection.activeGameObject = copy;
+            var newEditor = GeometryEditor.Create(copy.GetComponent<Geometry>());
+            Selection.activeGameObject = newEditor.Anchor.gameObject;
+        }
+
+        [MenuItem("Portal Weld/Geometry/Open TRS Window %#m")]
+        private static void OpenTRSWindow()
+        {
+            TRSWindow.ShowTRSWindow();
         }
 
         [MenuItem("Portal Weld/Show Hidden Objects")]
