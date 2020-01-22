@@ -1,7 +1,9 @@
 ﻿#if UNITY_EDITOR
+using PortalWeld.GeometryTool;
 using PortalWeld.TextureTool;
 using UnityEngine;
 using UnityEditor;
+using UnityEditorInternal;
 
 namespace PortalWeld
 {
@@ -74,6 +76,7 @@ namespace PortalWeld
                 foreach (var editableTexture in Utilities.GetManyFromSelection<EditableTexture>())
                 {
                     editableTexture.Material.mainTexture = Settings.SelectedTexture;
+                    editableTexture.GroupWithTexture();
                     PortalWeldCallbacks.TextureApplied?.Invoke(editableTexture.GetComponent<MeshRenderer>(), editableTexture.Material.mainTexture);
                 }
             }

@@ -259,11 +259,11 @@ namespace PortalWeld.GeometryTool
         /// </summary>
         public void BuildGeometry()
         {
-            var parentGameObject = new GameObject("Geometry");                  // One game object will serve as the parent
+            var parentGameObject = new GameObject();                                            // One game object will serve as the parent
             parentGameObject.transform.position = Anchor.transform.position;
 
-            var built = Geometry.Create(parentGameObject, this);                // This component is used to keep track of geometry data (verts, faces, tris)
-            var meshes = GenerateQuads();                                       // This creates a quad for every face
+            var built = Geometry.Create(parentGameObject, this);                                // This component is used to keep track of geometry data (verts, faces, tris)
+            var meshes = GenerateQuads();                                                       // This creates a quad for every face
 
             for (var i = 0; i < meshes.Count; i++)
             {
@@ -296,7 +296,8 @@ namespace PortalWeld.GeometryTool
 
                 meshGameObject.isStatic = Settings.IsStatic;
 
-                meshGameObject.AddComponent<EditableTexture>();
+                var editableTexture = meshGameObject.AddComponent<EditableTexture>();
+                editableTexture.GroupWithTexture();
                 
                 // Call some callbacks
                 PortalWeldCallbacks.TextureApplied?.Invoke(meshGameObject.GetComponent<MeshRenderer>(), meshGameObject.GetComponent<MeshRenderer>().sharedMaterial.mainTexture);

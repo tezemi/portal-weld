@@ -65,6 +65,20 @@ namespace PortalWeld.TextureTool
             );
         }
 
+        public void GroupWithTexture()
+        {
+            const string geometryRootName = "Geometry";
+
+            // Find the root of all geometry, and the root for specific textures
+            var root = GameObject.Find(geometryRootName) ?? new GameObject(geometryRootName);
+            var textureRoot = GameObject.Find(Material.mainTexture.name) ?? new GameObject(Material.mainTexture.name);
+
+            textureRoot.transform.SetParent(root.transform);
+
+            transform.parent.SetParent(textureRoot.transform);
+            transform.parent.name = $"Geometry {transform.parent.GetSiblingIndex()}";
+        }
+
         static EditableTexture()
         {
             // When selecting a new face, the previous face's texture will be placed in the 
