@@ -12,6 +12,35 @@ namespace PortalWeld
     public static class Utilities
     {
         /// <summary>
+        /// Style for buttons that work as toggles and are currently selected.
+        /// </summary>
+        private static GUIStyle _selectedStyle { get; set; }
+        /// <summary>
+        /// Style for buttons that work as toggles and are not selected.
+        /// </summary>
+        private static  GUIStyle _unselectedStyle { get; set; }
+
+        /// <summary>
+        /// Works like a GUILayout method, when called in OnDrawGUI, will 
+        /// draw a button that will be toggled depending on it's boolean value.
+        /// </summary>
+        public static bool ToggleButton(string text, bool isToggled, params GUILayoutOption[] options)
+        {
+            if (_unselectedStyle == null)
+            {
+                _unselectedStyle = new GUIStyle("Button");
+            }
+
+            if (_selectedStyle == null)
+            {
+                _selectedStyle = new GUIStyle(_unselectedStyle);
+                _selectedStyle.normal.background = _unselectedStyle.active.background;
+            }
+
+            return GUILayout.Button(text, isToggled ? _selectedStyle : _unselectedStyle, options);
+        }
+
+        /// <summary>
         /// Returns whether or not the mono behavior's game object is selected 
         /// by the user. It does not have to be the main selection to return
         /// true.

@@ -46,7 +46,7 @@ namespace PortalWeld.GeometryTool
             AnchorPosition = editor.Anchor.transform.position;
 
             Vertices = new Vector3[editor.Vertices.Count];
-            for (var i = 0; i <Vertices.Length; i++)
+            for (var i = 0; i < Vertices.Length; i++)
             {
                Vertices[i] = editor.Vertices[i].transform.position;
             }

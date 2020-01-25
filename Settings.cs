@@ -21,6 +21,10 @@ namespace PortalWeld
         /// </summary>
         public static bool ShowMeshPreview { get; set; }
         /// <summary>
+        /// If true, the user must double click faces in order to edit them.
+        /// </summary>
+        public static bool DoubleClickFaces { get; set; } = true;
+        /// <summary>
         /// Whether or not created geometry should have a collider attached.
         /// </summary>
         public static bool IsSolid { get; set; }

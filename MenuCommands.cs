@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System.Linq;
 using PortalWeld.GeometryTool;
+using PortalWeld.TerrainTool;
 using PortalWeld.TextureTool;
 using UnityEngine;
 using UnityEditor;
@@ -15,11 +16,13 @@ namespace PortalWeld
     {
         private const string ShowMeshPreviewPath = "Portal Weld/Geometry/Show Mesh Preview";
         private const string SnapToGridPath = "Portal Weld/Geometry/Snap to Grid";
+        private const string DoubleClickFacesPath = "Portal Weld/Geometry/Double Click Faces";
 
         static MenuCommands()
         {
             Menu.SetChecked(ShowMeshPreviewPath, Settings.ShowMeshPreview);
             Menu.SetChecked(SnapToGridPath, Settings.SnapToGrid);
+            Menu.SetChecked(DoubleClickFacesPath, Settings.DoubleClickFaces);
         }
         
         [MenuItem(ShowMeshPreviewPath)]
@@ -34,6 +37,13 @@ namespace PortalWeld
         {
             Settings.SnapToGrid = !Settings.SnapToGrid;
             Menu.SetChecked(SnapToGridPath, Settings.SnapToGrid);
+        }
+
+        [MenuItem(DoubleClickFacesPath)]
+        private static void DoubleClickFaces()
+        {
+            Settings.DoubleClickFaces = !Settings.DoubleClickFaces;
+            Menu.SetChecked(DoubleClickFacesPath, Settings.DoubleClickFaces);
         }
 
         [MenuItem("Portal Weld/Geometry/Bifurcate Edge")]
@@ -159,6 +169,12 @@ namespace PortalWeld
         private static void OpenTRSWindow()
         {
             TRSWindow.ShowTRSWindow();
+        }
+
+        [MenuItem("Portal Weld/Geometry/Open Terrain Window %#t")]
+        private static void OpenTerrainWindow()
+        {
+            TerrainWindow.ShowTerrainWindow();
         }
 
         [MenuItem("Portal Weld/Show Hidden Objects")]

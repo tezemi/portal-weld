@@ -1,4 +1,6 @@
 ﻿#if UNITY_EDITOR
+using System.Collections;
+using PortalWeld.GeometryTool;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,6 +16,8 @@ namespace PortalWeld.TextureTool
         protected const string MainTexProperty = "_MainTex";
         protected const string RotationProperty = "_Rotation";
         private static Texture _lastSelectedTexture;
+        private static Geometry _lastSelectedGeometry;
+        private static EditableTexture _lastSelectEditableTexture;
 
         public float Rotation
         {
@@ -81,19 +85,37 @@ namespace PortalWeld.TextureTool
 
         static EditableTexture()
         {
-            // When selecting a new face, the previous face's texture will be placed in the 
-            // texture menu
             Selection.selectionChanged += () =>
             {
-                if (Utilities.IsSelected<EditableTexture>())
+                if (Settings.DoubleClickFaces && Utilities.GetFromSelection<EditableTexture>() && _lastSelectEditableTexture != Utilities.GetFromSelection<EditableTexture>())
                 {
-                    if (_lastSelectedTexture != null)
+                    if (GeometryEditor.Current != null)
                     {
-                        Settings.SelectedTexture = _lastSelectedTexture;
+                        Utilities.GetFromSelection<EditableTexture>().StartCoroutine(ChangeSelection());
+                    }
+                    else
+                    {
+                        GeometryEditor.Create(Utilities.GetFromSelectionParent<Geometry>());
+                        Utilities.GetFromSelection<EditableTexture>().StartCoroutine(ChangeSelection());
                     }
 
-                    var texture = Utilities.GetFromSelection<EditableTexture>().Material.mainTexture;
-                    _lastSelectedTexture = texture;
+                    IEnumerator ChangeSelection()
+                    {
+                        yield return new WaitForSeconds(0f);
+                        if (GeometryEditor.Current != null)
+                        {
+                            Selection.activeGameObject = GeometryEditor.Current.Anchor.gameObject;
+                        }
+                    }
+                }
+
+                if (Utilities.IsSelected<EditableTexture>())
+                {
+                    _lastSelectEditableTexture = Utilities.GetFromSelection<EditableTexture>();
+                }
+                else if (Selection.activeGameObject == null)
+                {
+                    _lastSelectEditableTexture = null;
                 }
             };
         }
