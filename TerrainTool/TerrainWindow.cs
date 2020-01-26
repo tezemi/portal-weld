@@ -66,18 +66,23 @@ namespace PortalWeld.TerrainTool
             EditorGUI.EndDisabledGroup();
 
             var faces = Utilities.Get2FromSelection<TerrainFace>();
-            EditorGUI.BeginDisabledGroup(faces.Item1 != null && faces.Item2 != null);
+            EditorGUI.BeginDisabledGroup(faces.Item1 == null || faces.Item2 == null);
 
-            if (GUILayout.Button("Snap Terrain"))
+            if (GUILayout.Button("Snap Terrain") && faces.Item1 != null && faces.Item2 != null)
             {
-                var face = Utilities.IsSelected<TerrainVertex>() ? Utilities.GetFromSelectionParent<TerrainFace>() : Utilities.GetFromSelection<TerrainFace>();
-                foreach (var vertex1 in face.GetComponentsInChildren<TerrainVertex>())
+                foreach (var vertex1 in faces.Item1.GetComponentsInChildren<TerrainVertex>())
                 {
-                    foreach (var vertex2 in FindObjectsOfType<TerrainVertex>())
+                    foreach (var vertex2 in faces.Item2.GetComponentsInChildren<TerrainVertex>())
                     {
-                        if (vertex2.transform.parent != vertex1.transform.parent && Vector3.Distance(vertex1.transform.position, vertex2.transform.position) < 0.5f)
+                        if (Mathf.Abs(vertex1.transform.position.x - vertex2.transform.position.x) < 0.5f && Mathf.Abs(vertex1.transform.position.z - vertex2.transform.position.z) < 0.5f)
                         {
-                            vertex1.transform.position = vertex2.transform.position;
+                            var midpoint = (vertex1.transform.position + vertex2.transform.position) / 2f;
+
+                            vertex1.transform.position = midpoint;
+                            vertex2.transform.position = midpoint;
+
+                            faces.Item1.Rebuild();
+                            faces.Item2.Rebuild();
                         }
                     }
                 }

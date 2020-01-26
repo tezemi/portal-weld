@@ -154,6 +154,14 @@ namespace PortalWeld
                     geometry = editor.GeometryBeingEdited;
                 }
             }
+            else if (Utilities.IsSelected<GeometryEditorElement>())
+            {
+                var editor = Utilities.GetFromSelection<GeometryEditorElement>().GeometryEditor;
+                if (editor.EditMode)
+                {
+                    geometry = editor.GeometryBeingEdited;
+                }
+            }
 
             if (geometry == null)
             {
