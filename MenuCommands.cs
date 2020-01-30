@@ -194,6 +194,15 @@ namespace PortalWeld
             }
         }
 
+        [MenuItem("Portal Weld/Fuck")]
+        private static void FUCK()
+        {
+            Debug.Log("Before: " + SceneView.lastActiveSceneView.cameraSettings.nearClip);
+            SceneView.lastActiveSceneView.cameraSettings.nearClip = -500f;
+            SceneView.lastActiveSceneView.camera.nearClipPlane = -500f;
+            Debug.Log("After: " + SceneView.lastActiveSceneView.cameraSettings.nearClip);
+        }
+
         [MenuItem("GameObject/Portal Weld/New Cube %#z", false, 11)]
         private static void CreateCube()
         {

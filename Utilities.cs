@@ -336,17 +336,27 @@ namespace PortalWeld
         /// <returns>The view side.</returns>
         public static ViewSide GetCurrentViewSide()
         {
-            if (!SceneView.lastActiveSceneView.orthographic)
+            return GetCameraViewSide(SceneView.lastActiveSceneView.camera);
+        }
+
+        /// <summary>
+        /// Gets the view side for the specified camera.
+        /// </summary>
+        /// <param name="camera">The camera to get the view side for.</param>
+        /// <returns>The view side of the camera.</returns>
+        public static ViewSide GetCameraViewSide(Camera camera)
+        {
+            if (!camera.orthographic)
             {
                 return ViewSide.None;
             }
 
-            if (SceneView.lastActiveSceneView.camera.transform.rotation.eulerAngles.x == 90f)
+            if (camera.transform.rotation.eulerAngles.x == 90f)
             {
                 return ViewSide.Top;
             }
 
-            if (SceneView.lastActiveSceneView.camera.transform.rotation.eulerAngles.y == 270f)
+            if (camera.transform.rotation.eulerAngles.y == 270f)
             {
                 return ViewSide.Side;
             }

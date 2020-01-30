@@ -34,7 +34,7 @@ namespace PortalWeld.GeometryTool
             base.OnDrawGizmos();
             if (SceneView.lastActiveSceneView.orthographic)
             {
-                Gizmos.DrawCube(GetRenderPosition(), new Vector3(Size, Size, Size));
+                Gizmos.DrawCube(GetPosition(), new Vector3(Size, Size, Size));
             }
         }
 
@@ -65,6 +65,8 @@ namespace PortalWeld.GeometryTool
             {
                 vert.GeometryUpdated(amount);
             }
+
+            GeometryEditor.Anchor.GeometryUpdated(amount);
         }
 
         public override void GeometryUpdated(Vector3 amount)
@@ -77,16 +79,6 @@ namespace PortalWeld.GeometryTool
             if (Vertex1 == null || Vertex2 == null)
             {
                 return Face.transform.position;
-            }
-
-            return (Vertex1.Face.transform.position + Vertex2.Face.transform.position) / 2f;
-        }
-
-        public Vector3 GetRenderPosition()
-        {
-            if (Vertex1 == null || Vertex2 == null)
-            {
-                return ConvertToViewPoint(Face.transform.position);
             }
 
             return (Vertex1.Face.transform.position + Vertex2.Face.transform.position) / 2f;

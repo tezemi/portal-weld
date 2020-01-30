@@ -1,6 +1,5 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
-using UnityEditor;
 
 namespace PortalWeld.GeometryTool
 {
@@ -43,12 +42,7 @@ namespace PortalWeld.GeometryTool
         {
             base.OnDrawGizmos();
 
-            if (SceneView.lastActiveSceneView.orthographic)
-            {
-                Gizmos.DrawCube(ConvertToViewPoint(Center), new Vector3(Size, Size, Size));
-            }
-            
-            Gizmos.DrawCube(Center, new Vector3(Size, Size, Size));
+            Gizmos.DrawCube(transform.position, new Vector3(Size, Size, Size));
         }
 
         /// <inheritdoc />

@@ -36,7 +36,7 @@ namespace PortalWeld.GeometryTool
         protected override void OnDrawGizmos()
         {
             base.OnDrawGizmos();
-            if (Settings.GeometryEditMode == GeometryEditMode.Face /*&& !SceneView.lastActiveSceneView.orthographic*/)
+            if (Settings.GeometryEditMode == GeometryEditMode.Face && !SceneView.lastActiveSceneView.orthographic)
             {
                 Gizmos.DrawSphere(Center, Size);
             }
