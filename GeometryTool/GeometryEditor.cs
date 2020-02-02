@@ -68,6 +68,11 @@ namespace PortalWeld.GeometryTool
         /// </summary>
         [HideInInspector]
         public List<Vertex2D> Vertices2D = new List<Vertex2D>();
+        /// <summary>
+        /// A list containing every element part of this editor.
+        /// </summary>
+        [HideInInspector]
+        public List<GeometryEditorElement> Elements = new List<GeometryEditorElement>();
         private static GeometryEditor _current;
 
         /// <summary>
@@ -158,8 +163,8 @@ namespace PortalWeld.GeometryTool
             Vertex.Create(this, position + new Vector3(-cubeSize, -cubeSize, -cubeSize));
 
             // Create the edges of the cube
-            Edge.Create(this, Vertices[0], Vertices[1]).ShowLength = true;
-            Edge.Create(this, Vertices[0], Vertices[2]).ShowLength = true;
+            Edge.Create(this, Vertices[0], Vertices[1]);
+            Edge.Create(this, Vertices[0], Vertices[2]);
             Edge.Create(this, Vertices[1], Vertices[3]);
             Edge.Create(this, Vertices[2], Vertices[3]);
 
@@ -168,30 +173,34 @@ namespace PortalWeld.GeometryTool
             Edge.Create(this, Vertices[5], Vertices[7]);
             Edge.Create(this, Vertices[6], Vertices[7]);
 
-            Edge.Create(this, Vertices[0], Vertices[4]).ShowLength = true;
+            Edge.Create(this, Vertices[0], Vertices[4]);
             Edge.Create(this, Vertices[1], Vertices[5]);
             Edge.Create(this, Vertices[2], Vertices[6]);
             Edge.Create(this, Vertices[3], Vertices[7]);
 
             // Create the face objects
             // Order of vertices within triangles is important, defines normals, UVs
-            var top = Face4.Create(this, new Triangle(Vertices[0], Vertices[2], Vertices[1]), new Triangle(Vertices[2], Vertices[3], Vertices[1]));   // top
-            var bottom = Face4.Create(this, new Triangle(Vertices[6], Vertices[4], Vertices[7]), new Triangle(Vertices[4], Vertices[5], Vertices[7]));   // bottom
+            var top = Face4.Create(this, new Triangle(Vertices[0], Vertices[2], Vertices[1]), new Triangle(Vertices[2], Vertices[3], Vertices[1]));     // top
+            var bottom = Face4.Create(this, new Triangle(Vertices[6], Vertices[4], Vertices[7]), new Triangle(Vertices[4], Vertices[5], Vertices[7]));  // bottom
 
             var front = Face4.Create(this, new Triangle(Vertices[6], Vertices[2], Vertices[4]), new Triangle(Vertices[2], Vertices[0], Vertices[4]));   // front
-            var back = Face4.Create(this, new Triangle(Vertices[5], Vertices[1], Vertices[7]), new Triangle(Vertices[1], Vertices[3], Vertices[7]));   // back
+            var back = Face4.Create(this, new Triangle(Vertices[5], Vertices[1], Vertices[7]), new Triangle(Vertices[1], Vertices[3], Vertices[7]));    // back
 
-            var left = Face4.Create(this, new Triangle(Vertices[4], Vertices[0], Vertices[5]), new Triangle(Vertices[0], Vertices[1], Vertices[5]));   // right
+            var left = Face4.Create(this, new Triangle(Vertices[4], Vertices[0], Vertices[5]), new Triangle(Vertices[0], Vertices[1], Vertices[5]));    // right
             var right = Face4.Create(this, new Triangle(Vertices[7], Vertices[3], Vertices[6]), new Triangle(Vertices[3], Vertices[2], Vertices[6]));   // left
 
-            Vertex2D.Create(this, front, ViewSide.Top | ViewSide.Front);
-            Vertex2D.Create(this, back, ViewSide.Top | ViewSide.Front);
+            // Create elements used for 2D editing
+            const float offset = 1f;
+            var dright = Vertex2D.Create(this, front, ViewSide.Top | ViewSide.Front, new Vector3(offset, 0f, 0f));
+            Vertex2D.Create(this, back, ViewSide.Top | ViewSide.Front, new Vector3(-offset, 0f, 0f));
 
-            Vertex2D.Create(this, left, ViewSide.Top | ViewSide.Side);
-            Vertex2D.Create(this, right, ViewSide.Top | ViewSide.Side);
+            Vertex2D.Create(this, left, ViewSide.Top | ViewSide.Side, new Vector3(0f, 0f, offset));
+            var dbottom = Vertex2D.Create(this, right, ViewSide.Top | ViewSide.Side, new Vector3(0f, 0f, -offset));
 
-            Vertex2D.Create(this, top, ViewSide.Front | ViewSide.Side);
-            Vertex2D.Create(this, bottom, ViewSide.Front | ViewSide.Side);
+            Vertex2D.Create(this, top, ViewSide.Front | ViewSide.Side, new Vector3(0f, offset, 0f));
+            Vertex2D.Create(this, bottom, ViewSide.Front | ViewSide.Side, new Vector3(0f, -offset, 0f));
+            
+            //Vertex2D.Create(this, dbottom, dright, ViewSide.Top);
 
             // Create anchor point
             Anchor = Anchor.Create(this);

@@ -29,7 +29,7 @@ namespace PortalWeld.GeometryTool
                 return avg;
             }
         }
-
+        
         protected virtual void OnDestroy()
         {
             if (GeometryEditor != null)
@@ -55,23 +55,12 @@ namespace PortalWeld.GeometryTool
         {
             foreach (var vertex in GeometryEditor.Vertices)
             {
-                vertex.GeometryUpdated(amount);
+                vertex.transform.position += amount;
             }
 
-            foreach (var edge in GeometryEditor.Edges)
-            {
-                edge.GeometryUpdated(amount);
-            }
-
-            foreach (var face in GeometryEditor.Faces)
-            {
-                face.GeometryUpdated(amount);
-            }
-
-            foreach (var vertex in GeometryEditor.Vertices2D)
-            {
-                vertex.GeometryUpdated(amount);
-            }
+            Updates<Edge>();
+            Updates<Face>();
+            Updates<Vertex2D>();
         }
 
         /// <inheritdoc />
@@ -79,8 +68,7 @@ namespace PortalWeld.GeometryTool
         /// When another element of the editor is moved, the anchor is remain 
         /// in the center.
         /// </summary>
-        /// <param name="amount">The amount the other element was moved.</param>
-        public override void GeometryUpdated(Vector3 amount)
+        public override void GeometryUpdated()
         {
             transform.position = Center;
             if (Settings.SnapToGrid)
@@ -97,7 +85,10 @@ namespace PortalWeld.GeometryTool
         public static Anchor Create(GeometryEditor geometryEditor)
         {
             var anchor = new GameObject("Geometry Editor", typeof(Anchor)).GetComponent<Anchor>();
+
             anchor.GeometryEditor = geometryEditor;
+
+            anchor.GeometryEditor.Elements.Add(anchor);
 
             anchor.transform.position = anchor.Center;
 

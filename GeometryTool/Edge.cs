@@ -7,8 +7,6 @@ namespace PortalWeld.GeometryTool
     public class Edge : GeometryEditorElement
     {
         [HideInInspector]
-        public bool ShowLength;
-        [HideInInspector]
         public Vertex Vertex1;
         [HideInInspector]
         public Vertex Vertex2;
@@ -38,20 +36,12 @@ namespace PortalWeld.GeometryTool
             {
                 Gizmos.DrawSphere((Vertex1.transform.position + Vertex2.transform.position) / 2f, Size);   
             }
-
-            if (ShowLength)
-            {
-                var style = new GUIStyle { normal = { textColor = Color.green } };
-                Handles.Label(transform.position + LengthTextOffset, Length.ToString(), style);
-            }
         }
 
         protected override void OnMoved(Vector3 amount)
         {
-            GeometryEditor.Anchor.GeometryUpdated(amount);
-
-            Vertex1.GeometryUpdated(amount);
-            Vertex2.GeometryUpdated(amount);
+            Vertex1.transform.position += amount;
+            Vertex2.transform.position += amount;
 
             if (Settings.SnapToGrid)
             {
@@ -59,21 +49,13 @@ namespace PortalWeld.GeometryTool
                 Vertex2.SnapToGrid();
             }
 
-            foreach (var edge in GeometryEditor.Edges)
-            {
-                if (edge != this)
-                {
-                    edge.GeometryUpdated(amount);
-                }
-            }
-
-            foreach (var face in GeometryEditor.Faces)
-            {
-                face.GeometryUpdated(amount);
-            }
+            Updates<Edge>();
+            Updates<Face>();
+            Updates<Anchor>();
+            Updates<Vertex2D>();
         }
 
-        public override void GeometryUpdated(Vector3 difference)
+        public override void GeometryUpdated()
         {
             transform.position = Midpoint;
         }

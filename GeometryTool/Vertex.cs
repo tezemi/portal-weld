@@ -77,21 +77,15 @@ namespace PortalWeld.GeometryTool
 
         protected override void OnMoved(Vector3 amount)
         {
-            GeometryEditor.Anchor.GeometryUpdated(amount);
-            foreach (var edge in GeometryEditor.Edges)
-            {
-                edge.GeometryUpdated(amount);
-            }
-
-            foreach (var face in GeometryEditor.Faces)
-            {
-                face.GeometryUpdated(amount);
-            }
+            Updates<Anchor>();
+            GeometryUpdated();
         }
 
-        public override void GeometryUpdated(Vector3 difference)
+        public override void GeometryUpdated()
         {
-            transform.position += difference;
+            Updates<Edge>();
+            Updates<Face>();
+            Updates<Vertex2D>();
         }
 
         public bool IsConnectedTo(Vertex other)

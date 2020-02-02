@@ -9,7 +9,7 @@ namespace PortalWeld.GeometryTool
         [HideInInspector]
         public Vertex[] Vertices = new Vertex[4];
         
-        protected Vector3 Center
+        public Vector3 Center
         {
             get
             {
@@ -44,31 +44,22 @@ namespace PortalWeld.GeometryTool
 
         protected override void OnMoved(Vector3 amount)
         {
-            GeometryEditor.Anchor.GeometryUpdated(amount);
             foreach (var vertex in Vertices)
             {
-                vertex.GeometryUpdated(amount);
+                vertex.transform.position += amount;
                 if (Settings.SnapToGrid)
                 {
                     vertex.SnapToGrid();
                 }
             }
 
-            foreach (var edge in GeometryEditor.Edges)
-            {
-                edge.GeometryUpdated(amount);
-            }
-
-            foreach (var face in GeometryEditor.Faces)
-            {
-                if (face != this)
-                {
-                    face.GeometryUpdated(amount);
-                }
-            }
+            Updates<Edge>();
+            Updates<Face>();
+            Updates<Anchor>();
+            Updates<Vertex2D>();
         }
 
-        public override void GeometryUpdated(Vector3 difference)
+        public override void GeometryUpdated()
         {
             transform.position = Center;
         }

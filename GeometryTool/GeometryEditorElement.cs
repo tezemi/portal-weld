@@ -23,10 +23,15 @@ namespace PortalWeld.GeometryTool
         [HideInInspector]
         public Vector3 PositionLastFrame;
         /// <summary>
+        /// If true, disabled the calling of the OnMoved method when the 
+        /// element is moved.
+        /// </summary>
+        protected bool DisableOnMoved { get; set; }
+        /// <summary>
         /// A scale used to draw this element's gizmos relative to the 
         /// camera's distance.
         /// </summary>
-        protected virtual float DynamicGizmoScale  { get; } = 0.04f;
+        protected virtual float DynamicGizmoScale  { get; } = 0.015f;
         /// <summary>
         /// The smallest any gizmos will be drawn, even if the scene camera is 
         /// very close.
@@ -36,7 +41,7 @@ namespace PortalWeld.GeometryTool
         /// The largest any gizmos will be drawn, even if the scene camera is 
         /// very far away.
         /// </summary>
-        protected virtual float MaxGizmoSize { get; } = 5f;
+        protected virtual float MaxGizmoSize { get; } = 9999f;
         /// <summary>
         /// The color to draw this element when it is not selected.
         /// </summary>
@@ -57,7 +62,7 @@ namespace PortalWeld.GeometryTool
         /// Gizmo size without concern for the maximum and minimum.
         /// </summary>
         protected virtual float UncappedSize => (SceneView.lastActiveSceneView.orthographic ? SceneView.lastActiveSceneView.cameraDistance : Vector3.Distance(transform.position, SceneView.lastActiveSceneView.camera.transform.position)) * DynamicGizmoScale;
-        
+
         /// <summary>
         /// The actual size to draw this element's gizmos.
         /// </summary>
@@ -81,7 +86,7 @@ namespace PortalWeld.GeometryTool
         
         protected virtual void Update()
         {
-            if (Utilities.IsSelected(this) && transform.position != PositionLastFrame)
+            if (!DisableOnMoved && Utilities.IsSelected(this) && transform.position != PositionLastFrame)
             {
                 if (Settings.SnapToGrid && Settings.GridSize > 0f)
                 {
@@ -132,39 +137,26 @@ namespace PortalWeld.GeometryTool
         }
 
         /// <summary>
-        /// Takes the specified points and converts it to the same point but 
-        /// with respect to the 2d view side.
-        /// </summary>
-        /// <param name="vector">The point to converte</param>
-        /// <returns>The converted point.</returns>
-        public Vector3 ConvertToViewPoint(Vector3 vector)
-        {
-            switch (Utilities.GetCurrentViewSide())
-            {
-                case ViewSide.None:
-                    return vector;
-                case ViewSide.Top:
-                    return new Vector3(vector.x, SceneView.lastActiveSceneView.camera.transform.position.y - 10f, vector.z);
-                case ViewSide.Front:
-                    return new Vector3(vector.x, vector.y, SceneView.lastActiveSceneView.camera.transform.position.z - 10f);
-                case ViewSide.Side:
-                    return new Vector3(SceneView.lastActiveSceneView.camera.transform.position.x - 10f, vector.y, vector.z);
-                default:
-                    return vector;
-            }
-        }
-
-        /// <summary>
         /// Called when this element is moved.
         /// </summary>
         /// <param name="amount">The amount the element was moved.</param>
         protected abstract void OnMoved(Vector3 amount);
 
+        public void Updates<T>() where T : GeometryEditorElement
+        {
+            foreach (var element in GeometryEditor.Elements)
+            {
+                if (element is T && element != this)
+                {
+                    element.GeometryUpdated();
+                }
+            }
+        }
+
         /// <summary>
         /// Called when another element part of the same editor moves.
         /// </summary>
-        /// <param name="amount">The amount the other element moved.</param>
-        public abstract void GeometryUpdated(Vector3 amount);
+        public abstract void GeometryUpdated();
 
         /// <summary>
         /// Base method for creating a new geometry editor element.
@@ -176,8 +168,10 @@ namespace PortalWeld.GeometryTool
         protected static T CreateBase<T>(GeometryEditor mainGeometryEditor) where T : GeometryEditorElement
         {
             var element = new GameObject(typeof(T).Name, typeof(T)).GetComponent<T>();
+
             element.GeometryEditor = mainGeometryEditor;
             element.transform.SetParent(mainGeometryEditor.transform, true);
+            element.GeometryEditor.Elements.Add(element);
 
             return element;
         }

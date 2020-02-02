@@ -13,6 +13,8 @@ namespace PortalWeld.GeometryTool
     public class Vertex2D : GeometryEditorElement
     {
         [HideInInspector]
+        public Vector3 Offset;
+        [HideInInspector]
         public ViewSide ViewSide;
         [HideInInspector]
         public Face Face;
@@ -20,11 +22,23 @@ namespace PortalWeld.GeometryTool
         public Vertex2D Vertex1;
         [HideInInspector]
         public Vertex2D Vertex2;
-
+        private float _oldCameraDistance;
+        private SceneView _lastSceneView;
 
         protected virtual void OnRenderObject()
         {
-            transform.position = GetPosition();
+            if (_lastSceneView == SceneView.lastActiveSceneView && _oldCameraDistance != SceneView.lastActiveSceneView.cameraDistance)
+            {
+                DisableOnMoved = true;
+                transform.position = GetPosition();
+                _oldCameraDistance = SceneView.lastActiveSceneView.cameraDistance;
+            }
+            else
+            {
+                DisableOnMoved = false;
+            }
+
+            _lastSceneView = SceneView.lastActiveSceneView;
         }
 
         protected override void OnDrawGizmos()
@@ -34,7 +48,7 @@ namespace PortalWeld.GeometryTool
             base.OnDrawGizmos();
             if (SceneView.lastActiveSceneView.orthographic)
             {
-                Gizmos.DrawCube(GetPosition(), new Vector3(Size, Size, Size));
+                Gizmos.DrawCube(transform.position, new Vector3(Size, Size, Size));
             }
         }
 
@@ -42,34 +56,42 @@ namespace PortalWeld.GeometryTool
         {
             if (Vertex1 == null || Vertex2 == null)
             {
-                Face.MoveTo(transform.position);
+                Face.transform.position += amount;
+                foreach (var vertex in Face.Vertices)
+                {
+                    vertex.transform.position += amount;
+                    if (Settings.SnapToGrid)
+                    {
+                        vertex.SnapToGrid();
+                    }
+                }
+
+                Updates<Face>();
+                Updates<Anchor>();
+                Updates<Vertex2D>();
+
+                transform.position = GetPosition();
             }
             else
             {
-                Vertex1.Face.transform.position = new Vector3
-                (
-                    transform.position.x,
-                    Vertex1.Face.transform.position.y,
-                    Vertex1.Face.transform.position.z
-                );
+                if (Vertex1.ViewSide == (ViewSide.Top | ViewSide.Front))
+                {
+                    //Vertex1.Face.MoveTo(new Vector3(transform.position.x, Vertex1.transform.position.y, Vertex1.transform.position.z));
+                    //Vertex1.transform.position = new Vector3(transform.position.x, Vertex1.transform.position.y, Vertex1.transform.position.z);
+                }
 
-                Vertex2.Face.transform.position = new Vector3
-                (
-                    Vertex2.Face.transform.position.x,
-                    Vertex2.Face.transform.position.y,
-                    transform.position.z
-                );
+                if (Vertex2.ViewSide == (ViewSide.Top | ViewSide.Side))
+                {
+                    //Vertex2.Face.MoveTo(new Vector3(Vertex2.transform.position.x, Vertex2.transform.position.y, transform.position.z));
+                    //Vertex2.transform.position = new Vector3(Vertex2.transform.position.x, Vertex2.transform.position.y, transform.position.z);
+                }
+
+                //Vertex1.Face.MoveTo(Vertex1.transform.position);
+                //Vertex2.Face.MoveTo(Vertex2.transform.position);
             }
-
-            foreach (var vert in GeometryEditor.Vertices2D)
-            {
-                vert.GeometryUpdated(amount);
-            }
-
-            GeometryEditor.Anchor.GeometryUpdated(amount);
         }
 
-        public override void GeometryUpdated(Vector3 amount)
+        public override void GeometryUpdated()
         {
             transform.position = GetPosition();
         }
@@ -78,16 +100,22 @@ namespace PortalWeld.GeometryTool
         {
             if (Vertex1 == null || Vertex2 == null)
             {
-                return Face.transform.position;
+                return Face.transform.position + Offset * SceneView.lastActiveSceneView.cameraDistance * DynamicGizmoScale;
             }
 
-            return (Vertex1.Face.transform.position + Vertex2.Face.transform.position) / 2f;
+            if (Vertex1.ViewSide == (ViewSide.Top | ViewSide.Front) && Vertex2.ViewSide == (ViewSide.Top | ViewSide.Side))
+            {
+                return new Vector3(Vertex1.transform.position.x, Vertex1.transform.position.y, Vertex2.transform.position.z) + Offset;
+            }
+
+            return GeometryEditor.Anchor.transform.position;
         }
         
-        public static Vertex2D Create(GeometryEditor editor, Face face, ViewSide viewSide)
+        public static Vertex2D Create(GeometryEditor editor, Face face, ViewSide viewSide, Vector3 offset)
         {
             var vertex2D = CreateBase<Vertex2D>(editor);
 
+            vertex2D.Offset = offset;
             vertex2D.Face = face;
             vertex2D.ViewSide = viewSide;
 
