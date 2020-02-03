@@ -1,9 +1,8 @@
 ﻿#if UNITY_EDITOR
-using PortalWeld.GeometryTool;
 using UnityEngine;
 using UnityEditor;
 
-namespace PortalWeld
+namespace PortalWeld.GeometryTool
 {
     public class GeometryEditorToolbar : Toolbar
     {

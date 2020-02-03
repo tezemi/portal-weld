@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using PortalWeld.GeometryTool;
+using PortalWeld.TextureTool;
 using UnityEngine;
 using UnityEditor;
 

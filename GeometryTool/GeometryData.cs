@@ -27,13 +27,18 @@ namespace PortalWeld.GeometryTool
         /// Data representing all of the vertex positions of a geometry editor.
         /// </summary>
         public Vector3[] Vertices;
+        /// <summary>
+        /// Data representing all of the 2d vertex positions of a geometry editor.
+        /// </summary>
+        public Vector3[] Vertices2D;
 
-        public GeometryData(Vector3 anchorPosition, FaceData[] faces, EdgeData[] edges, Vector3[] vertices)
+        public GeometryData(Vector3 anchorPosition, FaceData[] faces, EdgeData[] edges, Vector3[] vertices, Vector3[] vertices2D)
         {
             AnchorPosition = anchorPosition;
             Faces = faces;
             Edges = edges;
             Vertices = vertices;
+            Vertices2D = vertices2D;
         }
 
         /// <summary>
@@ -96,6 +101,12 @@ namespace PortalWeld.GeometryTool
 
                 Faces[i] = new FaceData(face is Face4, vertices, triangles);
             }
+
+            Vertices2D = new Vector3[editor.Vertices2D.Count];
+            for (var i = 0; i < Vertices2D.Length; i++)
+            {
+                Vertices2D[i] = editor.Vertices2D[i].transform.position;
+            }
         }
 
         /// <summary>
@@ -147,6 +158,15 @@ namespace PortalWeld.GeometryTool
             {
                 Vertices = vertices;
             }
+        }
+
+        [Serializable]
+        public struct Vertex2DData
+        {
+            public Vector3 Position;
+            public Vector3 Offset;
+            public ViewSide Viewside;
+            public FaceData Face;
         }
     }
 }

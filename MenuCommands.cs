@@ -5,6 +5,7 @@ using PortalWeld.TerrainTool;
 using PortalWeld.TextureTool;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace PortalWeld
@@ -168,9 +169,19 @@ namespace PortalWeld
                 return;
             }
 
-            var copy = Object.Instantiate(geometry.gameObject);
-            var newEditor = GeometryEditor.Create(copy.GetComponent<Geometry>());
-            Selection.activeGameObject = newEditor.Anchor.gameObject;
+            var geometryCopy = Object.Instantiate(geometry.gameObject);
+
+            geometry.GeometryEditor.Anchor.transform.SetParent(geometry.GeometryEditor.transform, true);
+
+            var editorCopy = Object.Instantiate(geometry.GeometryEditor.gameObject);
+
+            geometry.GeometryEditor.Anchor.transform.SetParent(null, true);
+
+            editorCopy.GetComponent<GeometryEditor>().Anchor.transform.SetParent(null, true);
+            editorCopy.GetComponent<GeometryEditor>().GeometryBeingEdited = geometryCopy.GetComponent<Geometry>();
+            editorCopy.GetComponent<GeometryEditor>().RebuildGeometry();
+
+            Selection.activeGameObject = editorCopy.GetComponent<GeometryEditor>().Anchor.gameObject;
         }
 
         [MenuItem("Portal Weld/Geometry/Open TRS Window %#m")]
@@ -188,7 +199,7 @@ namespace PortalWeld
         [MenuItem("Portal Weld/Show Hidden Objects")]
         private static void ShowHiddenObjects()
         {
-            foreach (var obj in Object.FindObjectsOfType<GameObject>())
+            foreach (var obj in SceneManager.GetActiveScene().GetRootGameObjects())
             {
                 obj.hideFlags = HideFlags.None;
             }

@@ -11,11 +11,8 @@ namespace PortalWeld.GeometryTool
     [ExecuteAlways]
     public class Geometry : MonoBehaviour
     {
-        /// <summary>
-        /// Struct holding vertex, edge, and face positions for this geometry.
-        /// </summary>
         [HideInInspector]
-        public GeometryData GeometryData;
+        public GeometryEditor GeometryEditor;
 
         /// <summary>
         /// Creates a new geometry component on the specified game object, 
@@ -28,7 +25,7 @@ namespace PortalWeld.GeometryTool
         public static Geometry Create(GameObject geometryGameObject, GeometryEditor editor)
         {
             var builtGeometry = geometryGameObject.AddComponent<Geometry>();
-            builtGeometry.GeometryData = new GeometryData(editor);
+            builtGeometry.GeometryEditor = editor;
 
             return builtGeometry;
         }
@@ -42,27 +39,7 @@ namespace PortalWeld.GeometryTool
                 if (Utilities.IsSelected<Geometry>())
                 {
                     var selectedGeometry = Utilities.GetFromSelection<Geometry>();
-                     
-                    if (GeometryEditor.Current == null || GeometryEditor.Current.GeometryBeingEdited != selectedGeometry || !GeometryEditor.Current.EditMode)
-                    {
-                        if (GeometryEditor.Current != null && GeometryEditor.Current.GeometryBeingEdited != selectedGeometry)
-                        {
-                            GeometryEditor.Current.Delete();
-                        }
-
-                        GeometryEditor.Create(selectedGeometry);
-                    }
-                }
-                else
-                {
-                    if (GeometryEditor.Current == null || !GeometryEditor.Current.EditMode)
-                        return;
-
-                    if (Selection.activeGameObject != null && (Utilities.IsSelected<GeometryEditor>() || 
-                    Utilities.IsSelected<GeometryEditorElement>() || Selection.activeGameObject.GetComponentInParent<Geometry>() != null))
-                        return;
-                    
-                    GeometryEditor.Current.Delete();
+                    selectedGeometry.GeometryEditor.gameObject.SetActive(true);
                 }
             };
         }

@@ -17,6 +17,11 @@ namespace PortalWeld.GeometryTool
     public class GeometryEditor : MonoBehaviour
     {
         /// <summary>
+        /// The currently active geometry editor. There should only be one 
+        /// geometry editor at a given time.
+        /// </summary>
+        public static GeometryEditor Current { get; private set; }
+        /// <summary>
         /// Gets set to true if this geometry editor is being destroyed. This 
         /// is checked by other elements of the geometry editor to see if they 
         /// are being destroyed individually or as part of the entire object.
@@ -73,39 +78,50 @@ namespace PortalWeld.GeometryTool
         /// </summary>
         [HideInInspector]
         public List<GeometryEditorElement> Elements = new List<GeometryEditorElement>();
-        private static GeometryEditor _current;
-
-        /// <summary>
-        /// The currently active geometry editor. There should only be one 
-        /// geometry editor at a given time.
-        /// </summary>
-        public static GeometryEditor Current
-        {
-            get
-            {
-                if (_current == null && GameObject.Find("Geometry Editor"))
-                {
-                    _current = GameObject.Find("Geometry Editor").GetComponent<GeometryEditor>();
-                }
-
-                return _current;
-            }
-            private set
-            {
-                _current = value;
-            }
-        }
 
         protected virtual void Awake()
         {
-            // Destroy any other active geometry editors
+            gameObject.hideFlags = HideFlags.HideInHierarchy;   // The only game object exposed to the user is the anchor
+        }
+
+        protected virtual void OnEnable()
+        {
             if (Current != null && Current != this)
             {
-                DestroyImmediate(Current.Anchor.gameObject);
+                if (!Current.EditMode)
+                {
+                    DestroyImmediate(Current.Anchor.gameObject);
+                }
+                else
+                {
+                    Current.gameObject.SetActive(false);
+                }
             }
 
             Current = this;
-            gameObject.hideFlags = HideFlags.HideInHierarchy;   // The only game object exposed to the user is the anchor
+
+            foreach (var element in Elements)
+            {
+                element.gameObject.SetActive(true);
+                element.enabled = true;
+            }
+
+            if (Anchor != null)
+            {
+                Anchor.gameObject.hideFlags = HideFlags.None;
+                Anchor.gameObject.transform.SetAsLastSibling();
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            foreach (var element in Elements)
+            {
+                element.gameObject.SetActive(false);
+                element.enabled = false;
+            }
+
+            Anchor.gameObject.hideFlags = HideFlags.HideInHierarchy;
         }
 
         protected virtual void OnDestroy()
@@ -114,29 +130,17 @@ namespace PortalWeld.GeometryTool
 
             // Gathers all elements of this editor and destroys them
             var cleanup = new List<GameObject>();
-            foreach (var edge in Edges)
+            foreach (var element in Elements)
             {
-                cleanup.Add(edge.gameObject);
-            }
-
-            foreach (var vert in Vertices)
-            {
-                cleanup.Add(vert.gameObject);
-            }
-
-            foreach (var face in Faces)
-            {
-                cleanup.Add(face.gameObject);
-            }
-
-            foreach (var vert in Vertices2D)
-            {
-                cleanup.Add(vert.gameObject);
+                cleanup.Add(element.gameObject);
             }
 
             foreach (var clean in cleanup)
             {
-                DestroyImmediate(clean);
+                if (clean != Anchor.gameObject)
+                {
+                    DestroyImmediate(clean);
+                }
             }
 
             DestroyImmediate(MeshPreview.gameObject);
@@ -191,11 +195,11 @@ namespace PortalWeld.GeometryTool
 
             // Create elements used for 2D editing
             const float offset = 1f;
-            var dright = Vertex2D.Create(this, front, ViewSide.Top | ViewSide.Front, new Vector3(offset, 0f, 0f));
+            Vertex2D.Create(this, front, ViewSide.Top | ViewSide.Front, new Vector3(offset, 0f, 0f));
             Vertex2D.Create(this, back, ViewSide.Top | ViewSide.Front, new Vector3(-offset, 0f, 0f));
 
             Vertex2D.Create(this, left, ViewSide.Top | ViewSide.Side, new Vector3(0f, 0f, offset));
-            var dbottom = Vertex2D.Create(this, right, ViewSide.Top | ViewSide.Side, new Vector3(0f, 0f, -offset));
+            Vertex2D.Create(this, right, ViewSide.Top | ViewSide.Side, new Vector3(0f, 0f, -offset));
 
             Vertex2D.Create(this, top, ViewSide.Front | ViewSide.Side, new Vector3(0f, offset, 0f));
             Vertex2D.Create(this, bottom, ViewSide.Front | ViewSide.Side, new Vector3(0f, -offset, 0f));
@@ -207,48 +211,6 @@ namespace PortalWeld.GeometryTool
             Selection.activeGameObject = Anchor.gameObject;
 
             // Create mesh preview tool
-            MeshPreview = MeshPreview.Create(this);
-        }
-
-        /// <summary>
-        /// Sets up this editor using already positions defined in the 
-        /// specified geometry data.
-        /// </summary>
-        /// <param name="data">The data that specifies how to create
-        /// the geometry.</param>
-        protected void SetupMeshEditing(GeometryData data)
-        {
-            foreach (var vertex in data.Vertices)
-            {
-                Vertex.Create(this, vertex);
-            }
-
-            foreach (var edge in data.Edges)
-            {
-                var vertex1 = GetVertexAtPosition(edge.Vertex1);
-                var vertex2 = GetVertexAtPosition(edge.Vertex2);
-
-                Edge.Create(this, vertex1, vertex2);
-            }
-
-            foreach (var face in data.Faces)
-            {
-                if (face.Face4)
-                {
-                    var tri1 = new Triangle(GetVertexAtPosition(face.Triangles[0].Vertices[0]), GetVertexAtPosition(face.Triangles[0].Vertices[1]), GetVertexAtPosition(face.Triangles[0].Vertices[2]));
-                    var tri2 = new Triangle(GetVertexAtPosition(face.Triangles[1].Vertices[0]), GetVertexAtPosition(face.Triangles[1].Vertices[1]), GetVertexAtPosition(face.Triangles[1].Vertices[2]));
-                    Face4.Create(this, tri1, tri2);
-                }
-                else
-                {
-                    var tri = new Triangle(GetVertexAtPosition(face.Triangles[0].Vertices[0]), GetVertexAtPosition(face.Triangles[0].Vertices[1]), GetVertexAtPosition(face.Triangles[0].Vertices[2]));
-                    Face3.Create(this, tri);
-                }
-            }
-
-            Anchor = Anchor.Create(this);
-            Selection.activeGameObject = Anchor.gameObject;
-
             MeshPreview = MeshPreview.Create(this);
         }
 
@@ -307,7 +269,7 @@ namespace PortalWeld.GeometryTool
 
                 var editableTexture = meshGameObject.AddComponent<EditableTexture>();
                 editableTexture.GroupWithTexture();
-                
+
                 // Call some callbacks
                 PortalWeldCallbacks.TextureApplied?.Invoke(meshGameObject.GetComponent<MeshRenderer>(), meshGameObject.GetComponent<MeshRenderer>().sharedMaterial.mainTexture);
                 PortalWeldCallbacks.MeshBuilt?.Invoke(meshGameObject.GetComponent<MeshFilter>());
@@ -319,15 +281,14 @@ namespace PortalWeld.GeometryTool
 
             Settings.LastBuiltGeometryPosition = Anchor.transform.position;
 
-            Create(built);
-        }
-        
-        /// <summary>
-        /// Gets rid of this geometry editor and all of its elements.
-        /// </summary>
-        public void Delete()
-        {
-            DestroyImmediate(Anchor.gameObject);
+            // This geometry editor will now edit the built geometry
+            if (!EditMode)
+            {
+                EditMode = true;
+                Selection.activeGameObject = Anchor.gameObject;
+            }
+
+            GeometryBeingEdited = built;
         }
 
         /// <summary>
@@ -465,42 +426,11 @@ namespace PortalWeld.GeometryTool
         /// <returns>The newly created geometry editor.</returns>
         public static GeometryEditor Create(Shape shape, Vector3 position)
         {
-            var editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>(); // Will destroy any current editors
+            var editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>();
 
             if (shape == Shape.Cube)
             {
                 editor.SetupCubeEditing(position);
-            }
-
-            return editor;
-        }
-
-        /// <summary>
-        /// Creates a new geometry editor that will be used to edit the 
-        /// specified built geometry.
-        /// </summary>
-        /// <param name="geometry">The geometry to be edited.</param>
-        /// <returns>The newly created geometry editor.</returns>
-        public static GeometryEditor Create(Geometry geometry)
-        {
-            var isRebuild = false;
-            GeometryEditor editor;
-            if (Current == null || !Current.EditMode)
-            {
-                editor = new GameObject("Geometry Editor", typeof(GeometryEditor)).GetComponent<GeometryEditor>();
-            }
-            else
-            {
-                editor = Current;
-                isRebuild = true;
-            }
-
-            editor.EditMode = true;
-            editor.GeometryBeingEdited = geometry;
-
-            if (!isRebuild)     // When rebuilding already created geometry, there is no need to create a new editor
-            {
-                editor.SetupMeshEditing(geometry.GeometryData);
             }
 
             return editor;

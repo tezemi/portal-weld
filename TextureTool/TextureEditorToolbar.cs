@@ -1,9 +1,8 @@
 ﻿#if UNITY_EDITOR
-using PortalWeld.TextureTool;
 using UnityEngine;
 using UnityEditor;
 
-namespace PortalWeld
+namespace PortalWeld.TextureTool
 {
     public class TextureEditorToolbar : Toolbar
     {

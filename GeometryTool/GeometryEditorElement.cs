@@ -53,7 +53,7 @@ namespace PortalWeld.GeometryTool
         /// <summary>
         /// The color to draw this element's gizmos when edit mode is enabled.
         /// </summary>
-        protected virtual Color ExistingGizmoColor { get; } = new Color(0.75f, 0.35f, 0.15f, 1f);
+        protected virtual Color ExistingGizmoColor { get; } = new Color(0.75f, 0.15f, 0.15f, 1f);
         /// <summary>
         /// The offset at which to draw text gizmos from this element.
         /// </summary>
