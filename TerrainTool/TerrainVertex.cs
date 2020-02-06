@@ -13,6 +13,11 @@ namespace PortalWeld.TerrainTool
         [HideInInspector]
         public TerrainFace Face;
         
+        protected virtual void Awake()
+        {
+            tag = "EditorOnly";
+        }
+
         protected virtual void Update()
         {
             if (transform.position !=  PositionLastFrame && Utilities.IsSelected(this))

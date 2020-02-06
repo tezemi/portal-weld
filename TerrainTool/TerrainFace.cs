@@ -1,8 +1,8 @@
-﻿#if UNITY_EDITOR
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PortalWeld.TerrainTool
 {
+    #if UNITY_EDITOR
     [ExecuteAlways]
     [RequireComponent(typeof(MeshFilter))]
     public class TerrainFace : MonoBehaviour
@@ -40,5 +40,6 @@ namespace PortalWeld.TerrainTool
             return face;
         }
     }
+    #endif
 }
-#endif
+

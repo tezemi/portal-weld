@@ -84,6 +84,11 @@ namespace PortalWeld.GeometryTool
             }
         } 
         
+        protected virtual void Awake()
+        {
+            tag = "EditorOnly";
+        }
+
         protected virtual void Update()
         {
             if (!DisableOnMoved && Utilities.IsSelected(this) && transform.position != PositionLastFrame)

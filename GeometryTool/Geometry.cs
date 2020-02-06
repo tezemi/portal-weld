@@ -1,6 +1,7 @@
-﻿#if UNITY_EDITOR
+﻿using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine;
+#endif
 
 namespace PortalWeld.GeometryTool
 {
@@ -11,6 +12,7 @@ namespace PortalWeld.GeometryTool
     [ExecuteAlways]
     public class Geometry : MonoBehaviour
     {
+        #if UNITY_EDITOR
         [HideInInspector]
         public GeometryEditor GeometryEditor;
 
@@ -43,6 +45,6 @@ namespace PortalWeld.GeometryTool
                 }
             };
         }
+        #endif
     }
 }
-#endif

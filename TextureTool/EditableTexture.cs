@@ -1,7 +1,8 @@
-﻿#if UNITY_EDITOR
-using PortalWeld.GeometryTool;
-using UnityEditor;
+﻿using PortalWeld.GeometryTool;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PortalWeld.TextureTool
 {
@@ -10,6 +11,7 @@ namespace PortalWeld.TextureTool
     [RequireComponent(typeof(MeshRenderer))]
     public class EditableTexture : MonoBehaviour
     {
+        #if UNITY_EDITOR
         [HideInInspector]
         public Material Material;
         protected const string MainTexProperty = "_MainTex";
@@ -90,6 +92,6 @@ namespace PortalWeld.TextureTool
                 }
             };
         }
+        #endif
     }
 }
-#endif

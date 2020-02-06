@@ -144,6 +144,11 @@ namespace PortalWeld.GeometryTool
             }
 
             DestroyImmediate(MeshPreview.gameObject);
+
+            if (EditMode && GeometryBeingEdited != null)
+            {
+                DestroyImmediate(GeometryBeingEdited.gameObject);
+            }
         }
 
         /// <summary>
