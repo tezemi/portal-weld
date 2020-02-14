@@ -98,12 +98,12 @@ namespace PortalWeld.GeometryTool
 
         public Vector3 GetPosition()
         {
-            if (Vertex1 == null || Vertex2 == null)
+            if ((Vertex1 == null || Vertex2 == null) && !float.IsNaN(SceneView.lastActiveSceneView.cameraDistance) && !float.IsInfinity(SceneView.lastActiveSceneView.cameraDistance))
             {
                 return Face.transform.position + Offset * SceneView.lastActiveSceneView.cameraDistance * DynamicGizmoScale;
             }
 
-            if (Vertex1.ViewSide == (ViewSide.Top | ViewSide.Front) && Vertex2.ViewSide == (ViewSide.Top | ViewSide.Side))
+            if (Vertex1 != null && Vertex2 != null && Vertex1.ViewSide == (ViewSide.Top | ViewSide.Front) && Vertex2.ViewSide == (ViewSide.Top | ViewSide.Side))
             {
                 return new Vector3(Vertex1.transform.position.x, Vertex1.transform.position.y, Vertex2.transform.position.z) + Offset;
             }

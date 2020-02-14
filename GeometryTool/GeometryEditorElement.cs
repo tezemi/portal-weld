@@ -153,6 +153,7 @@ namespace PortalWeld.GeometryTool
             {
                 if (element is T && element != this)
                 {
+                    Undo.RecordObject(element, "Geometry Updated");
                     element.GeometryUpdated();
                 }
             }

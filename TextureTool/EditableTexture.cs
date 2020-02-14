@@ -1,7 +1,9 @@
 ﻿using PortalWeld.GeometryTool;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace PortalWeld.TextureTool
@@ -14,8 +16,10 @@ namespace PortalWeld.TextureTool
         #if UNITY_EDITOR
         [HideInInspector]
         public Material Material;
+        protected MeshFilter MeshFilter { get; set; }
         protected const string MainTexProperty = "_MainTex";
         protected const string RotationProperty = "_Rotation";
+        private Vector2 _tiling = Vector2.one;
 
         public float Rotation
         {
@@ -27,6 +31,11 @@ namespace PortalWeld.TextureTool
             {
                 if (Material.HasProperty(RotationProperty))
                 {
+                    if (Material.GetFloat(RotationProperty) != value)
+                    {
+                        EditorSceneManager.MarkSceneDirty(gameObject.scene);
+                    }
+
                     Material.SetFloat(RotationProperty, value);
                 }
             }
@@ -36,11 +45,45 @@ namespace PortalWeld.TextureTool
         {
             get
             {
-                return Material.GetTextureScale(MainTexProperty);
+                return _tiling;
             }
             set
             {
-                Material.SetTextureScale(MainTexProperty, value);
+                if (Material.GetTextureScale(MainTexProperty) != value)
+                {
+                    EditorSceneManager.MarkSceneDirty(gameObject.scene);
+                }
+
+                float x;
+                if (MeshFilter.sharedMesh.bounds.size.x > MeshFilter.sharedMesh.bounds.size.z)
+                {
+                    x = MeshFilter.sharedMesh.bounds.size.x;
+                }
+                else
+                {
+                    x = MeshFilter.sharedMesh.bounds.size.z;
+                }
+
+                float y;
+                if (MeshFilter.sharedMesh.bounds.size.y > MeshFilter.sharedMesh.bounds.size.z || MeshFilter.sharedMesh.bounds.size.y > MeshFilter.sharedMesh.bounds.size.x)
+                {
+                    y = MeshFilter.sharedMesh.bounds.size.y;
+                }
+                else if (MeshFilter.sharedMesh.bounds.size.x > MeshFilter.sharedMesh.bounds.size.z)
+                {
+                    y = MeshFilter.sharedMesh.bounds.size.z;
+                }
+                else
+                {
+                    y = MeshFilter.sharedMesh.bounds.size.x;
+                }
+
+                x /= Settings.TextureScale;
+                y /= Settings.TextureScale;
+
+                Material.SetTextureScale(MainTexProperty, value * new Vector2(x, y));
+
+                _tiling = value;
             }
         }
 
@@ -52,19 +95,19 @@ namespace PortalWeld.TextureTool
             }
             set
             {
+                if (Material.GetTextureOffset(MainTexProperty) != value)
+                {
+                    EditorSceneManager.MarkSceneDirty(gameObject.scene);
+                }
+
                 Material.SetTextureOffset(MainTexProperty, value);
             }
         }
 
         protected virtual void Awake()
         {
-            var mesh = GetComponent<MeshFilter>().sharedMesh;
+            MeshFilter = GetComponent<MeshFilter>();
             Material = GetComponent<MeshRenderer>().sharedMaterial;
-            Tiling = new Vector2
-            (
-                mesh.bounds.size.x == 0f ? mesh.bounds.size.z / 2f : mesh.bounds.size.x / 2f,
-                mesh.bounds.size.y == 0f ? mesh.bounds.size.z / 2f : mesh.bounds.size.y / 2f
-            );
         }
 
         public void GroupWithTexture()
@@ -72,8 +115,37 @@ namespace PortalWeld.TextureTool
             const string geometryRootName = "Geometry";
 
             // Find the root of all geometry, and the root for specific textures
-            var root = GameObject.Find(geometryRootName) ?? new GameObject(geometryRootName);
-            var textureRoot = GameObject.Find(Material.mainTexture.name) ?? new GameObject(Material.mainTexture.name);
+            GameObject root = null;
+            foreach (var obj in gameObject.scene.GetRootGameObjects())
+            {
+                if (obj.name == geometryRootName)
+                {
+                    root = obj;
+                    break;
+                }
+            }
+
+            if (root == null)
+            {
+                root = new GameObject(geometryRootName);
+                SceneManager.MoveGameObjectToScene(root, gameObject.scene);
+            }
+
+            GameObject textureRoot = null;
+            foreach (Transform child in root.transform)
+            {
+                if (child.name == Material.mainTexture.name)
+                {
+                    textureRoot = child.gameObject;
+                    break;
+                }
+            }
+
+            if (textureRoot == null)
+            {
+                textureRoot = new GameObject(Material.mainTexture.name);
+                SceneManager.MoveGameObjectToScene(textureRoot, gameObject.scene);
+            }
 
             textureRoot.transform.SetParent(root.transform);
 
@@ -88,7 +160,10 @@ namespace PortalWeld.TextureTool
                 if (Utilities.IsSelected<EditableTexture>())
                 {
                     var selectedGeometry = Utilities.GetFromSelectionParent<Geometry>();
-                    selectedGeometry.GeometryEditor.gameObject.SetActive(true);
+                    if (selectedGeometry.GeometryEditor != null)
+                    {
+                        selectedGeometry.GeometryEditor.gameObject.SetActive(true);
+                    }
                 }
             };
         }

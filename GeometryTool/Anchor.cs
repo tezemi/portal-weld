@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 namespace PortalWeld.GeometryTool
@@ -34,7 +35,7 @@ namespace PortalWeld.GeometryTool
         {
             if (GeometryEditor != null)
             {
-                DestroyImmediate(GeometryEditor.gameObject);
+                Undo.DestroyObjectImmediate(GeometryEditor.gameObject);
             }
         }
 

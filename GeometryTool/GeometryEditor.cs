@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using PortalWeld.TextureTool;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 
 namespace PortalWeld.GeometryTool
 {
@@ -117,8 +118,11 @@ namespace PortalWeld.GeometryTool
         {
             foreach (var element in Elements)
             {
-                element.gameObject.SetActive(false);
-                element.enabled = false;
+                if (element != null)
+                {
+                    element.gameObject.SetActive(false);
+                    element.enabled = false;
+                }
             }
 
             Anchor.gameObject.hideFlags = HideFlags.HideInHierarchy;
@@ -139,11 +143,11 @@ namespace PortalWeld.GeometryTool
             {
                 if (clean != Anchor.gameObject)
                 {
-                    DestroyImmediate(clean);
+                    //Undo.DestroyObjectImmediate(clean);
                 }
             }
 
-            DestroyImmediate(MeshPreview.gameObject);
+            //Undo.DestroyObjectImmediate(MeshPreview.gameObject);
 
             if (EditMode && GeometryBeingEdited != null)
             {
@@ -236,6 +240,7 @@ namespace PortalWeld.GeometryTool
         public void BuildGeometry()
         {
             var parentGameObject = new GameObject();                                            // One game object will serve as the parent
+            SceneManager.MoveGameObjectToScene(parentGameObject, gameObject.scene);
             parentGameObject.transform.position = Anchor.transform.position;
 
             var built = Geometry.Create(parentGameObject, this);                                // This component is used to keep track of geometry data (verts, faces, tris)
@@ -245,13 +250,14 @@ namespace PortalWeld.GeometryTool
             {
                 var mesh = meshes[i];   // Assign every quad to a new object
                 var meshGameObject = new GameObject("Face", typeof(MeshFilter), typeof(MeshRenderer));
+                SceneManager.MoveGameObjectToScene(meshGameObject, gameObject.scene);
 
                 meshGameObject.transform.position = Anchor.transform.position;
                 meshGameObject.transform.SetParent(parentGameObject.transform, true);
 
                 meshGameObject.GetComponent<MeshFilter>().mesh = mesh;
 
-                if (!EditMode)  // Assign the default texture when not in edit mode
+                if (!EditMode)                          // Assign the default texture when not in edit mode
                 {
                     meshGameObject.GetComponent<MeshRenderer>().sharedMaterial = new Material(Settings.BaseMaterial)
                     {
@@ -259,7 +265,7 @@ namespace PortalWeld.GeometryTool
                         mainTexture = Settings.SelectedTexture
                     };
                 }
-                else            // Assign the texture on the previous face if in edit mode
+                else if (GeometryBeingEdited != null)   // Assign the texture on the previous face if in edit mode
                 {
                     meshGameObject.GetComponent<MeshRenderer>().sharedMaterial = new Material(GeometryBeingEdited.transform.GetChild(i).GetComponent<MeshRenderer>().sharedMaterial);
                 }
@@ -274,6 +280,17 @@ namespace PortalWeld.GeometryTool
 
                 var editableTexture = meshGameObject.AddComponent<EditableTexture>();
                 editableTexture.GroupWithTexture();
+                if (EditMode && GeometryBeingEdited != null)
+                {
+                    var originalFace = GeometryBeingEdited.transform.GetChild(i);
+                    if (originalFace != null)
+                    {
+                        var originalEditableTexture = originalFace.GetComponent<EditableTexture>();
+                        editableTexture.Offset = originalEditableTexture.Offset;
+                        editableTexture.Tiling = originalEditableTexture.Tiling;
+                        editableTexture.Rotation = originalEditableTexture.Rotation;
+                    }
+                }
 
                 // Call some callbacks
                 PortalWeldCallbacks.TextureApplied?.Invoke(meshGameObject.GetComponent<MeshRenderer>(), meshGameObject.GetComponent<MeshRenderer>().sharedMaterial.mainTexture);

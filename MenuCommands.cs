@@ -171,9 +171,13 @@ namespace PortalWeld
 
             var geometryCopy = Object.Instantiate(geometry.gameObject);
 
+            SceneManager.MoveGameObjectToScene(geometryCopy, geometry.gameObject.scene);
+
             geometry.GeometryEditor.Anchor.transform.SetParent(geometry.GeometryEditor.transform, true);
 
             var editorCopy = Object.Instantiate(geometry.GeometryEditor.gameObject);
+
+            SceneManager.MoveGameObjectToScene(editorCopy, geometry.gameObject.scene);
 
             geometry.GeometryEditor.Anchor.transform.SetParent(null, true);
 
@@ -205,13 +209,23 @@ namespace PortalWeld
             }
         }
 
-        [MenuItem("Portal Weld/Fuck")]
-        private static void FUCK()
+        [MenuItem("Portal Weld/Set Texture Scale")]
+        private static void SetTextureScale()
         {
-            Debug.Log("Before: " + SceneView.lastActiveSceneView.cameraSettings.nearClip);
-            SceneView.lastActiveSceneView.cameraSettings.nearClip = -500f;
-            SceneView.lastActiveSceneView.camera.nearClipPlane = -500f;
-            Debug.Log("After: " + SceneView.lastActiveSceneView.cameraSettings.nearClip);
+            
+        }
+
+        [MenuItem("Portal Weld/Set 2D Clipping Planes")]
+        private static void Set2DClippingPlanes()
+        {
+            foreach (SceneView view in SceneView.sceneViews)
+            {
+                if (view.orthographic)
+                {
+                    view.cameraSettings.farClip = 9999f;
+                    view.cameraSettings.nearClip = -9999f;
+                }
+            }
         }
 
         [MenuItem("GameObject/Portal Weld/New Cube %#z", false, 11)]

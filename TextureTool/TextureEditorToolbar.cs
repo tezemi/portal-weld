@@ -65,6 +65,7 @@ namespace PortalWeld.TextureTool
             }
 
             EditorGUILayout.EndVertical();
+
             #endregion
 
             #region Apply Button
@@ -82,6 +83,11 @@ namespace PortalWeld.TextureTool
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndVertical();
+        }
+
+        protected virtual void Update()
+        {
+            Repaint();
         }
     }
 }

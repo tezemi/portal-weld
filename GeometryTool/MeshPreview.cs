@@ -1,10 +1,10 @@
-﻿#if UNITY_EDITOR
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PortalWeld.GeometryTool
 {
     public class MeshPreview : MonoBehaviour
     {
+        #if UNITY_EDITOR
         [HideInInspector]
         public GeometryEditor GeometryEditor;
         [HideInInspector]
@@ -39,6 +39,7 @@ namespace PortalWeld.GeometryTool
             
             return meshPreview;
         }
+        #endif
     }
 }
-#endif
+

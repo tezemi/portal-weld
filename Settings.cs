@@ -37,6 +37,10 @@ namespace PortalWeld
         /// </summary>
         public static float GridSize { get; set; }
         /// <summary>
+        /// Defines the scale at which all textures will appear on geometry.
+        /// </summary>
+        public static float TextureScale { get; set; }
+        /// <summary>
         /// The current geometry edit mode.
         /// </summary>
         public static GeometryEditMode GeometryEditMode { get; set; }
@@ -66,6 +70,7 @@ namespace PortalWeld
             IsStatic = EditorPrefs.GetBool("Settings.IsStatic", true);
 
             GridSize = EditorPrefs.GetFloat("Settings.GridSize", 1f);
+            TextureScale = EditorPrefs.GetFloat("Settings.TextureScale", 2f);
             GeometryEditMode = (GeometryEditMode)EditorPrefs.GetInt("Settings.GeometryEditMode", 0);
             GeometryLayerMask = EditorPrefs.GetInt("Settings.GeometryLayerMask", 0);
 
@@ -83,6 +88,7 @@ namespace PortalWeld
                 EditorPrefs.SetBool("Settings.IsStatic", IsStatic);
 
                 EditorPrefs.SetFloat("Settings.GridSize", GridSize);
+                EditorPrefs.SetFloat("Settings.TextureScale", TextureScale);
                 EditorPrefs.SetInt("Settings.GeometryEditMode", (int)GeometryEditMode);
                 EditorPrefs.SetInt("Settings.GeometryLayerMask", GeometryLayerMask);
 
