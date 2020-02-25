@@ -53,29 +53,43 @@ namespace PortalWeld.TextureTool
                 {
                     EditorSceneManager.MarkSceneDirty(gameObject.scene);
                 }
-
+                
                 float x;
-                if (MeshFilter.sharedMesh.bounds.size.x > MeshFilter.sharedMesh.bounds.size.z)
-                {
-                    x = MeshFilter.sharedMesh.bounds.size.x;
-                }
-                else
-                {
-                    x = MeshFilter.sharedMesh.bounds.size.z;
-                }
-
                 float y;
-                if (MeshFilter.sharedMesh.bounds.size.y > MeshFilter.sharedMesh.bounds.size.z || MeshFilter.sharedMesh.bounds.size.y > MeshFilter.sharedMesh.bounds.size.x)
+                var meshSize = MeshFilter.sharedMesh.bounds.size;
+
+                if (meshSize.y < meshSize.x && meshSize.y < meshSize.z)
                 {
-                    y = MeshFilter.sharedMesh.bounds.size.y;
-                }
-                else if (MeshFilter.sharedMesh.bounds.size.x > MeshFilter.sharedMesh.bounds.size.z)
-                {
-                    y = MeshFilter.sharedMesh.bounds.size.z;
+                    Debug.Log("First", MeshFilter.gameObject);
+                    if (meshSize.x > meshSize.z || meshSize.y == 0f)
+                    {
+                        x = meshSize.x;
+                        y = meshSize.z;
+                    }
+                    else
+                    {
+                        x = meshSize.z;
+                        y = meshSize.x;
+                    }
+
+                    MeshFilter.gameObject.name = "First";
                 }
                 else
                 {
-                    y = MeshFilter.sharedMesh.bounds.size.x;
+                    if (meshSize.x > meshSize.z)
+                    {
+                        Debug.Log("Third", MeshFilter.gameObject);
+                        x = meshSize.x;
+                        y = meshSize.y;
+                        MeshFilter.gameObject.name = "Second";
+                    }
+                    else
+                    {
+                        Debug.Log("Fourth", MeshFilter.gameObject);
+                        x = meshSize.z;
+                        y = meshSize.y;
+                        MeshFilter.gameObject.name = "Third";
+                    }
                 }
 
                 x /= Settings.TextureScale;

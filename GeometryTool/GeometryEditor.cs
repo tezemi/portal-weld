@@ -273,18 +273,25 @@ namespace PortalWeld.GeometryTool
                 meshGameObject.layer = Settings.GeometryLayerMask;
                 if (Settings.IsSolid)
                 {
-                    meshGameObject.AddComponent<BoxCollider>();
+                    meshGameObject.AddComponent<MeshCollider>();
+
+                    var cookingOptions = MeshColliderCookingOptions.CookForFasterSimulation | MeshColliderCookingOptions.EnableMeshCleaning | MeshColliderCookingOptions.WeldColocatedVertices;
+                    meshGameObject.GetComponent<MeshCollider>().cookingOptions = cookingOptions;
                 }
 
                 meshGameObject.isStatic = Settings.IsStatic;
 
+                // Setup for texture editing
                 var editableTexture = meshGameObject.AddComponent<EditableTexture>();
-                editableTexture.GroupWithTexture();
-                if (EditMode && GeometryBeingEdited != null)
+                editableTexture.Tiling = Vector2.one;   // Sets default scale
+                editableTexture.GroupWithTexture();     // Groups geometry will others like it
+
+                if (EditMode && GeometryBeingEdited != null)    // If in edit mode...
                 {
                     var originalFace = GeometryBeingEdited.transform.GetChild(i);
                     if (originalFace != null)
                     {
+                        // Assign the texture options from the previous build
                         var originalEditableTexture = originalFace.GetComponent<EditableTexture>();
                         editableTexture.Offset = originalEditableTexture.Offset;
                         editableTexture.Tiling = originalEditableTexture.Tiling;
