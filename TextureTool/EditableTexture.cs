@@ -60,7 +60,6 @@ namespace PortalWeld.TextureTool
 
                 if (meshSize.y < meshSize.x && meshSize.y < meshSize.z)
                 {
-                    Debug.Log("First", MeshFilter.gameObject);
                     if (meshSize.x > meshSize.z || meshSize.y == 0f)
                     {
                         x = meshSize.x;
@@ -71,24 +70,18 @@ namespace PortalWeld.TextureTool
                         x = meshSize.z;
                         y = meshSize.x;
                     }
-
-                    MeshFilter.gameObject.name = "First";
                 }
                 else
                 {
                     if (meshSize.x > meshSize.z)
                     {
-                        Debug.Log("Third", MeshFilter.gameObject);
                         x = meshSize.x;
                         y = meshSize.y;
-                        MeshFilter.gameObject.name = "Second";
                     }
                     else
                     {
-                        Debug.Log("Fourth", MeshFilter.gameObject);
                         x = meshSize.z;
                         y = meshSize.y;
-                        MeshFilter.gameObject.name = "Third";
                     }
                 }
 
