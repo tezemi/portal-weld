@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System.Linq;
 using System.Collections.Generic;
 using PortalWeld.TextureTool;
@@ -17,6 +16,7 @@ namespace PortalWeld.GeometryTool
     [ExecuteAlways]
     public class GeometryEditor : MonoBehaviour
     {
+        #if UNITY_EDITOR
         /// <summary>
         /// The currently active geometry editor. There should only be one 
         /// geometry editor at a given time.
@@ -136,7 +136,10 @@ namespace PortalWeld.GeometryTool
             var cleanup = new List<GameObject>();
             foreach (var element in Elements)
             {
-                cleanup.Add(element.gameObject);
+                if (element != null)
+                {
+                    cleanup.Add(element.gameObject);
+                }
             }
 
             foreach (var clean in cleanup)
@@ -149,7 +152,7 @@ namespace PortalWeld.GeometryTool
 
             //Undo.DestroyObjectImmediate(MeshPreview.gameObject);
 
-            if (EditMode && GeometryBeingEdited != null)
+            if (EditMode && GeometryBeingEdited != null && !BuildPipeline.isBuildingPlayer)
             {
                 DestroyImmediate(GeometryBeingEdited.gameObject);
             }
@@ -464,6 +467,6 @@ namespace PortalWeld.GeometryTool
 
             return editor;
         }
+        #endif
     }
 }
-#endif
